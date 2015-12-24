@@ -3,7 +3,8 @@
 	"version": "1.0.0",
 	"description": "A web based chess game",
 	"people": {
-
+		"name": "Aditya",
+		"email": "adityam.rtm@gmail.com"
 	},
 	"repository": {
 		"type": "git",
