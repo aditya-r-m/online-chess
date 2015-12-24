@@ -1,0 +1,24 @@
+{
+  "name": "online-chess",
+  "description": "A web based chess game",
+  "main": "home.html",
+  "authors": [
+    "Aditya Mishra <aditya.mishra@comprotechnologies.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/aditya-r-m/online-chess",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src/_lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "angular": "~1.4.8",
+    "angular-bootstrap": "~0.14.3"
+  }
+}
