@@ -1,0 +1,12 @@
+{
+	"name": "online-chess",
+	"version": "1.0.0",
+	"description": "A web based chess game",
+	"people": {
+
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aditya-r-m/online-chess.git"
+	}
+}
