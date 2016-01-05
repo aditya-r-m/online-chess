@@ -1,13 +1,17 @@
 {
-	"name": "online-chess",
-	"version": "1.0.0",
-	"description": "A web based chess game",
-	"people": {
-		"name": "Aditya",
-		"email": "adityam.rtm@gmail.com"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/aditya-r-m/online-chess.git"
-	}
+  "name": "online-chess",
+  "version": "1.0.0",
+  "description": "A web based chess game",
+  "people": {
+    "name": "Aditya",
+    "email": "adityam.rtm@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aditya-r-m/online-chess.git"
+  },
+  "dependencies": {
+    "express": "^4.13.3",
+    "socket.io": "^0.8.7"
+  }
 }
