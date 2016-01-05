@@ -1,16 +1,16 @@
 function pawn(rank, file, side, type) {
 	return new piece(rank, file, side, type, function (board) {
 
-		var stepsM = [[side, 0]];
+		var stepsM = [[this.side, 0]];
 
-		if (!board[this.rank + side][this.file] && ((side == 1 && this.rank == 1) || (side == -1 && this.rank == 6)))
-			stepsM.push([side + side, 0]);
+		if (!board[this.rank + this.side][this.file] && ((this.side == 1 && this.rank == 1) || (this.side == -1 && this.rank == 6)))
+			stepsM.push([this.side + this.side, 0]);
 
 		var stepsK = [];
 		if (this.file > 0)
-			stepsK.push([side, -1]);
+			stepsK.push([this.side, -1]);
 		if (this.file < 7)
-			stepsK.push([side, 1]);
+			stepsK.push([this.side, 1]);
 
 		for (var x = 0; x < stepsM.length; x++)
 			if (!board[this.rank + stepsM[x][0]][this.file + stepsM[x][1]].piece)
