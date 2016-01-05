@@ -6,6 +6,7 @@ function king(rank, file, side, type) {
 			for (var j = -1; j < 2; j++)
 				if (i !== 0 || j !== 0)
 					steps.push([i, j]);
+
 		for (var x = 0; x < steps.length; x++)
 			if (!board[this.rank + steps[x][0]][this.file + steps[x][1]].piece)
 				m.push({
