@@ -1,0 +1,19 @@
+.chessboard {
+	width: 800px;
+	height: 802px;
+	padding: 0px;
+	border: 1px solid black;
+}
+.chessboard div {
+	height: 100px;
+	margin: 0px;
+	padding: 0px;
+}
+.even {
+	color: black;
+	background-color: white;
+}
+.odd {
+	color: white;
+	background-color: black;
+}
