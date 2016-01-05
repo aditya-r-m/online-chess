@@ -20,7 +20,7 @@ function rook(rank, file, side, type) {
 			}
 		}
 
-		for (var r = this.rank - 1; r > 0; r--) {
+		for (var r = this.rank - 1; r >= 0; r--) {
 			if (!board[r][this.file].piece)
 				m.push({
 					rank: r,
@@ -52,7 +52,7 @@ function rook(rank, file, side, type) {
 			}
 		}
 
-		for (var f = this.file - 1; f > 0; f--) {
+		for (var f = this.file - 1; f >= 0; f--) {
 			if (!board[this.rank][f].piece)
 				m.push({
 					rank: this.rank,
