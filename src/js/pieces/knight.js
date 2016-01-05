@@ -21,7 +21,6 @@ function knight(rank, file, side, type) {
 				file: this.file + steps[x][1]
 			});
 
-
 		return {
 			move: m,
 			capture: k,
