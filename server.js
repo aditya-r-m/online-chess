@@ -4,10 +4,10 @@ var path = require("path");
 var app = express();
 
 
-app.use('/static', express.static(path.join(__dirname, '/src/')));
+app.use('/static', express.static(path.join(__dirname, '/static/')));
 
 app.get('/', function (req, res) {
-	res.sendFile(__dirname + '/home.html');
+	res.sendFile(__dirname + '/open-games.html');
 	console.log("served file");
 });
 
