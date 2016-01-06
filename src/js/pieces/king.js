@@ -2,6 +2,9 @@ function king(rank, file, side, type) {
 	return new piece(rank, file, side, type, function (board) {
 
 		var steps = [];
+		var m = [];
+		var k = [];
+
 		for (var i = -1; i < 2; i++)
 			for (var j = -1; j < 2; j++)
 				if (i !== 0 || j !== 0 && (this.rank + i >= 0 && this.rank + i < 8) && (this.file + j >= 0 && this.file + j < 8))

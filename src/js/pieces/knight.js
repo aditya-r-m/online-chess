@@ -2,11 +2,14 @@ function knight(rank, file, side, type) {
 	return new piece(rank, file, side, type, function (board) {
 
 		var steps = [];
+		var m = [];
+		var k = [];
+
 		for (var i = -2; i < 3; i++)
 			if (i != 0)
 				for (var j = -2; j < 3; j++)
 					if (j != 0)
-						if (i !== j && (this.rank + i >= 0 && this.rank + i < 8) && (this.file + j >= 0 && this.file + j < 8))
+						if (i !== j && i !== -j && (this.rank + i >= 0 && this.rank + i < 8) && (this.file + j >= 0 && this.file + j < 8))
 							steps.push([i, j]);
 
 		for (var x = 0; x < steps.length; x++)
