@@ -10,15 +10,8 @@
 
 	<div class="container chessboard" ng-controller="GameController">
 		<div class="row" ng-repeat="row in board track by $index">
-			<div class="col-xs-6">
-				<div class="col-xs-3" ng-repeat="square in row | limitTo:4:0 track by $index" ng-class="{'even':(square.rank+square.file)%2===0,'odd':(square.rank+square.file)%2!==0,'highlighted-move':square.highlightedMove,'highlighted-capture':square.highlightedCapture}">
-					<img ng-if="square.piece" ng-src="/static/data/icons/{{((square.piece.side===1)?'w':'b')+square.piece.type}}.png" />
-				</div>
-			</div>
-			<div class="col-xs-6">
-				<div class="col-xs-3" ng-repeat="square in row | limitTo:8:4 track by $index" ng-class="{'even':(square.rank+square.file)%2===0,'odd':(square.rank+square.file)%2!==0,'highlighted-move':square.highlightedMove,'highlighted-capture':square.highlightedCapture}">
-					<img ng-if="square.piece " ng-src="/static/data/icons/{{((square.piece.side===1)? 'w':'b')+square.piece.type}}.png" />
-				</div>
+			<div class="square" ng-repeat="square in row track by $index" ng-class="{'even':(square.rank+square.file)%2===0,'odd':(square.rank+square.file)%2!==0,'highlighted-move':square.highlightedMove,'highlighted-capture':square.highlightedCapture}">
+				<img ng-if="square.piece" ng-src="/static/data/icons/{{((square.piece.side===1)?'w':'b')+square.piece.type}}.png" />
 			</div>
 		</div>
 	</div>

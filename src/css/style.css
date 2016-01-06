@@ -4,10 +4,14 @@
 	padding: 0px;
 	border: 1px solid black;
 }
-.chessboard div {
-	height: 100px;
+.chessboard * {
 	margin: 0px;
 	padding: 0px;
+}
+.chessboard .square {
+	float: left;
+	height: 12.5%;
+	width: 12.5%;
 }
 .even {
 	color: black;
