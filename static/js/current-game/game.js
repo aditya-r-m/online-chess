@@ -1,3 +1,5 @@
+io();
+
 angular.module("chess", [])
 
 .controller("GameController", ['$scope', function ($scope) {
@@ -10,6 +12,7 @@ angular.module("chess", [])
 				'file': j
 			});
 	}
+
 	$scope.board[0][0].piece = new rook(0, 0, 1, 'r');
 	$scope.board[0][1].piece = new knight(0, 1, 1, 'n');
 	$scope.board[0][2].piece = new bishop(0, 2, 1, 'b');
@@ -34,7 +37,6 @@ angular.module("chess", [])
 	$scope.board[7][6].piece = new knight(0, 6, -1, 'n');
 	$scope.board[7][7].piece = new rook(0, 7, -1, 'r');
 
-
 	/*
 	$scope.board[1][4].piece = new bishop(1, 4, 1, 'b');
 	$scope.board[6][4].piece = new queen(6, 4, 1, 'q');
@@ -51,4 +53,5 @@ angular.module("chess", [])
 	for (var i in list)
 		$scope.board[list[i].rank][list[i].file].highlightedCapture = true;
 	*/
+
 }]);

@@ -8,15 +8,37 @@
 
 <body>
 
-	<div class="container list-box">
+	<div class="container list-box" ng-controller="listController">
 		<div class="page-header">
 			<h1>Open Games</h1>
-			<p>Join an open game or create a new one.</p>
-			<table class="table table-striped">
+			<p>Join an open game or
+				<button id="create-new" class="btn btn-primary" ng-click="createGame()">Create new Game</button>
+				<input type="text" class="form-control" id="usr" ng-model="userName" placeholder="Your name here" size="11" ng-style="failed?{'border-color':'red'}:''">
+			</p>
 
-			</table>
 		</div>
-		<a id="create-new" class="btn btn-primary" href="/game">Create new Game</a>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Opponent</th>
+					<th>Side</th>
+					<th>Join Game</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="row in list">
+					<td>
+						{{row.player}}
+					</td>
+					<td>
+						{{row.side}}
+					</td>
+					<td>
+						<button class="btn btn-success" ng-click="joinGame(row.id)">Join</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 
 
@@ -25,7 +47,7 @@
 	<script src="/static/_lib/angular-bootstrap/ui-bootstrap.js "></script>
 	<script src="/socket.io/socket.io.js"></script>
 
-	<script src="/static/js/open-games.js"></script>
+	<script src="/static/js/open-games/open-games.js"></script>
 </body>
 
 </html>

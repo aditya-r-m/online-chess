@@ -4,18 +4,23 @@ body {
 	background: -o-linear-gradient(white, #999999);
 	background: -moz-linear-gradient(white, #999999);
 	background: linear-gradient(white, #999999);
+	height: 100%;
 }
 .list-box {
 	margin: auto;
 	margin-top: 10%;
 	background: white;
 	width: 50%;
-	height: 50%;
 	border: 1px solid black;
 	border-radius: 10px;
 }
 .page-header {
 	border-bottom: 1px solid #cccccc;
+}
+#usr {
+	display: inline-block;
+	width: 11em;
+	float: right;
 }
 .chessboard {
 	width: 800px;
