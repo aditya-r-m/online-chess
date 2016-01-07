@@ -6,6 +6,7 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
 app.openGames = [];
+app.clients = {};
 
 app.use('/static', express.static(path.join(__dirname, '/static/')));
 
@@ -29,6 +30,10 @@ io.on("connection", function (socket) {
 
 	socket.on("disconnect", function () {
 		console.log(socket.id + " is disconnected");
+	});
+
+	socket.on("join-game", function () {
+
 	});
 });
 io.on("disconnection", function () {

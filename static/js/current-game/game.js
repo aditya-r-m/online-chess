@@ -37,21 +37,4 @@ angular.module("chess", [])
 	$scope.board[7][6].piece = new knight(0, 6, -1, 'n');
 	$scope.board[7][7].piece = new rook(0, 7, -1, 'r');
 
-	/*
-	$scope.board[1][4].piece = new bishop(1, 4, 1, 'b');
-	$scope.board[6][4].piece = new queen(6, 4, 1, 'q');
-	$scope.board[4][6].piece = new queen(4, 6, 1, 'q');
-	$scope.board[5][6].piece = new queen(5, 6, 1, 'q');
-	$scope.board[2][5].piece = new queen(2, 5, -1, 'q');
-
-	var list = $scope.board[1][4].piece.legalMoves($scope.board).move;
-
-	for (var i in list)
-		$scope.board[list[i].rank][list[i].file].highlightedMove = true;
-	var list = $scope.board[1][4].piece.legalMoves($scope.board).capture;
-
-	for (var i in list)
-		$scope.board[list[i].rank][list[i].file].highlightedCapture = true;
-	*/
-
 }]);

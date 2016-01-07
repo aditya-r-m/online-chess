@@ -32,7 +32,10 @@ angular.module("openGames", [])
 	}
 
 	$scope.joinGame = function (id) {
-		console.log(id);
+		socketService.socket.emit("join-game", {
+			'id1': id,
+			'id2': socketService.socket.id
+		});
 	}
 
 }]);

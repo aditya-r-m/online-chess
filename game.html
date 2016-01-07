@@ -1,4 +1,4 @@
-<html ng-app="chess">
+<html>
 
 <head>
 	<title>Online multiplayer chess</title>
@@ -6,7 +6,7 @@
 	<link rel="stylesheet" href="/static/css/style.css" />
 </head>
 
-<body>
+<body ng-app="chess">
 
 	<div class="container chessboard" ng-controller="GameController">
 		<div class="row" ng-repeat="row in board track by $index">
