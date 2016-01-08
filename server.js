@@ -19,14 +19,14 @@ io.on("connection", function (socket) {
 	console.log("connection");
 
 	app.clients[socket.id] = socket;
-	app.clients[socket.id].gameIndex = undefined
+	app.clients[socket.id].gameIndex = false;
 
 	socket.on("get-list", function () {
 		socket.emit("add-games", app.openGames);
 	});
 
 	socket.on("new-game", function (data) {
-		if (!app.clients[socket.id].gameIndex && app.clients[socket.id].gameIndex !== 0) {
+		if (app.clients[socket.id].gameIndex === false) {
 			app.clients[socket.id].gameIndex = app.openGames.length;
 			app.openGames.push(data);
 			io.sockets.emit('add-games', data);
@@ -41,6 +41,11 @@ io.on("connection", function (socket) {
 
 	socket.on("disconnect", function () {
 		app.openGames.splice(app.clients[socket.id].gameIndex, 1);
+
+		for (var i in app.clients) {
+			if (app.clients[i].gameIndex > app.clients[socket.id].gameIndex)
+				app.clients[i].gameIndex -= 1;
+		}
 
 		io.sockets.emit('remove-from-list', {
 			'index': app.clients[socket.id].gameIndex
