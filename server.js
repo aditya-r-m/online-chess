@@ -11,33 +11,47 @@ app.clients = {};
 app.use('/static', express.static(path.join(__dirname, '/static/')));
 
 app.get('/', function (req, res) {
-	res.sendFile(__dirname + '/open-games.html');
+	res.sendFile(__dirname + '/home.html');
 });
 
-app.get('/game', function (req, res) {
-	res.sendFile(__dirname + '/game.html');
-});
 
 io.on("connection", function (socket) {
-	console.log("connected");
+	console.log("connection");
 
-	socket.emit("add-games", app.openGames);
+	app.clients[socket.id] = socket;
+	app.clients[socket.id].gameIndex = undefined
+
+	socket.on("get-list", function () {
+		socket.emit("add-games", app.openGames);
+	});
 
 	socket.on("new-game", function (data) {
-		app.openGames.push(data);
-		io.sockets.emit('add-games', data);
+		if (!app.clients[socket.id].gameIndex && app.clients[socket.id].gameIndex !== 0) {
+			app.clients[socket.id].gameIndex = app.openGames.length;
+			app.openGames.push(data);
+			io.sockets.emit('add-games', data);
+		} else {
+			app.openGames[app.clients[socket.id].gameIndex] = data;
+			io.sockets.emit('update-list', {
+				'index': app.clients[socket.id].gameIndex,
+				'game': data
+			});
+		}
 	});
 
 	socket.on("disconnect", function () {
 		console.log(socket.id + " is disconnected");
+		app.openGames.splice(app.clients[socket.id].gameIndex, 1);
+
+		io.sockets.emit('remove-from-list', {
+			'index': app.clients[socket.id].gameIndex
+		});
+		delete app.clients[socket.id];
 	});
 
-	socket.on("join-game", function () {
+	socket.on("join-game", function (data) {
 
 	});
-});
-io.on("disconnection", function () {
-	console.log("disconnected");
 });
 
 server.listen(3000, function () {
