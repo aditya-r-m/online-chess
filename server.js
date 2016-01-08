@@ -40,10 +40,8 @@ io.on("connection", function (socket) {
 	});
 
 	socket.on("disconnect", function () {
-		console.log(socket.id + " is disconnected");
 		app.openGames.splice(app.clients[socket.id].gameIndex, 1);
 
-		console.log(app.openGames);
 		io.sockets.emit('remove-from-list', {
 			'index': app.clients[socket.id].gameIndex
 		});

@@ -78,10 +78,8 @@ angular.module("chess", ["ui.router"])
 	});
 
 	socketService.socket.on("remove-from-list", function (data) {
-		console.log($scope.list);
 		$scope.list.splice(data.index, 1);
 		$scope.$apply();
-		console.log($scope.list);
 	});
 
 	$scope.createGame = function () {
@@ -102,7 +100,5 @@ angular.module("chess", ["ui.router"])
 			'id1': id,
 			'id2': socketService.socket.id
 		});
-		console.log(id);
-		console.log(socketService.socket.id);
 	}
 }]);;
