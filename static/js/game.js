@@ -1,5 +1,3 @@
-io();
-
 angular.module("chess", ["ui.router"])
 
 .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
@@ -80,8 +78,10 @@ angular.module("chess", ["ui.router"])
 	});
 
 	socketService.socket.on("remove-from-list", function (data) {
+		console.log($scope.list);
 		$scope.list.splice(data.index, 1);
 		$scope.$apply();
+		console.log($scope.list);
 	});
 
 	$scope.createGame = function () {
