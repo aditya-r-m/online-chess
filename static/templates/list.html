@@ -20,11 +20,14 @@
 				<td>
 					{{row.player}}
 				</td>
-				<td>
+				<td ng-if="row.id!==id">
 					{{row.side}}
 				</td>
+				<td ng-if="row.id===id">
+					{{row.side=="white"?"black":"white"}}
+				</td>
 				<td>
-					<button class="btn btn-success" ng-click="joinGame(row.id)">Join</a>
+					<button class="btn btn-success" ng-click="joinGame(row.id,row.player,row.side)" ng-if="row.id!==id">Join</button>
 				</td>
 			</tr>
 		</tbody>

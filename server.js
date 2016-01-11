@@ -54,7 +54,24 @@ io.on("connection", function (socket) {
 	});
 
 	socket.on("join-game", function (data) {
+		data.owner = '/#' + data.owner;
+		data.opponent = '/#' + data.opponent;
 
+		var i = app.clients[data.owner].gameIndex;
+
+		app.openGames.splice(i, 1);
+
+		for (var i in app.clients) {
+			if (app.clients[i].gameIndex > i)
+				app.clients[i].gameIndex -= 1;
+		}
+
+		io.sockets.emit('remove-from-list', {
+			'index': i
+		});
+
+		app.clients[data.owner].emit("game-created");
+		app.clients[data.opponent].emit("game-created");
 	});
 });
 

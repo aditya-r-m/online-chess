@@ -20,6 +20,13 @@ angular.module("chess", ["ui.router"])
 	this.socket = io();
 })
 
+.service("gameData", function () {
+	this.started = false;
+	this.opponent = undefined;
+	this.side = undefined;
+	this.turn = false;
+})
+
 .controller("GameController", ['$scope', function ($scope) {
 	$scope.board = [];
 	for (var i = 0; i < 8; i++) {
@@ -57,13 +64,18 @@ angular.module("chess", ["ui.router"])
 
 }])
 
-.controller("listController", ['$scope', 'socketService', function ($scope, socketService) {
+.controller("listController", ['$scope', 'socketService', 'gameData', '$state', function ($scope, socketService, gameData, $state) {
 
 	$scope.list = [];
 
 	$scope.userName = "";
 
 	$scope.failed = false;
+
+	socketService.socket.on("connect", function () {
+		$scope.id = socketService.socket.id;
+		$scope.$apply();
+	});
 
 	socketService.socket.emit("get-list");
 
@@ -82,6 +94,11 @@ angular.module("chess", ["ui.router"])
 		$scope.$apply();
 	});
 
+	socketService.socket.on("game-created", function () {
+		gameData.started = true;
+		$state.go("game");
+	});
+
 	$scope.createGame = function () {
 		if ($scope.userName && $scope.userName != "") {
 			$scope.failed = false;
@@ -95,10 +112,17 @@ angular.module("chess", ["ui.router"])
 		}
 	}
 
-	$scope.joinGame = function (id) {
+	$scope.joinGame = function (id, opponent, side) {
+
+		gameData.opponent = opponent;
+
+		gameData.side = (side == "white") ? 1 : -1;
+
+		gameData.turn = (side == "white") ? true : false;
+
 		socketService.socket.emit("join-game", {
-			'id1': id,
-			'id2': socketService.socket.id
+			'owner': id,
+			'opponent': socketService.socket.id
 		});
 	}
-}]);;
+}]);
