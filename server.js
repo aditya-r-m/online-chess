@@ -61,16 +61,32 @@ io.on("connection", function (socket) {
 
 		app.openGames.splice(i, 1);
 
-		for (var i in app.clients) {
-			if (app.clients[i].gameIndex > i)
-				app.clients[i].gameIndex -= 1;
+		for (var x in app.clients) {
+			if (app.clients[x].gameIndex > i)
+				app.clients[x].gameIndex -= 1;
 		}
 
 		io.sockets.emit('remove-from-list', {
 			'index': i
 		});
 
-		app.clients[data.owner].emit("game-created");
+		var j = app.clients[data.opponent].gameIndex;
+
+		if (j || j == 0) {
+
+			app.openGames.splice(j, 1);
+
+			for (var x in app.clients) {
+				if (app.clients[x].gameIndex > j)
+					app.clients[x].gameIndex -= 1;
+			}
+
+			io.sockets.emit('remove-from-list', {
+				'index': j
+			});
+		}
+
+		app.clients[data.owner].emit("game-created", data.gameData);
 		app.clients[data.opponent].emit("game-created");
 	});
 });

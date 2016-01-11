@@ -22,6 +22,14 @@ body {
 	width: 11em;
 	float: right;
 }
+.game-container {
+	width: 800px;
+	margin: auto;
+}
+.panel-message {
+	margin-top: 20px;
+	border: 1px solid black;
+}
 .chessboard {
 	width: 800px;
 	height: 802px;
