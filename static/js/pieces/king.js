@@ -7,9 +7,12 @@ function king(rank, file, side, type) {
 
 		for (var i = -1; i < 2; i++)
 			for (var j = -1; j < 2; j++)
-				if (i !== 0 || j !== 0 && (this.rank + i >= 0 && this.rank + i < 8) && (this.file + j >= 0 && this.file + j < 8))
+				if ((i !== 0 || j !== 0) && (this.rank + i >= 0 && this.rank + i < 8) && (this.file + j >= 0 && this.file + j < 8))
 					steps.push([i, j]);
 
+
+		console.log(board);
+		console.log(steps);
 		for (var x = 0; x < steps.length; x++)
 			if (!board[this.rank + steps[x][0]][this.file + steps[x][1]].piece)
 				m.push({
