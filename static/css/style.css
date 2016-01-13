@@ -17,6 +17,34 @@ body {
 .page-header {
 	border-bottom: 1px solid #cccccc;
 }
+.panel {
+	text-align: center;
+}
+.panel-body {
+	width: 100%;
+}
+.panel>div>div {
+	display: inline-block;
+	clear: none;
+	margin: auto;
+	width: auto;
+}
+.player-details {
+	float: left;
+}
+.player-details > * {
+	float: left;
+}
+.opponent-details {
+	float: right;
+}
+.opponent-details > * {
+	float: right;
+}
+.panel img {
+	height: 25px;
+	width: 25px;
+}
 #usr {
 	display: inline-block;
 	width: 11em;

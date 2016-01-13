@@ -1,9 +1,5 @@
 <div class="game-container" ng-controller="GameController">
 
-	<div class="">
-
-	</div>
-
 	<div class="container chessboard">
 		<div class="row" ng-repeat="row in board track by $index">
 			<div class="square" ng-repeat="square in row track by $index" ng-class="{'even':(square.rank+square.file)%2===0,'odd':(square.rank+square.file)%2!==0,'highlighted-move':square.highlightedMove,'highlighted-capture':square.highlightedCapture}" ng-click="selectSquare($parent.$index,$index)">
@@ -13,6 +9,18 @@
 	</div>
 
 	<div class="panel panel-default panel-message">
-		<div class="panel-body"></div>
+		<div class="panel-body">
+			<div class="player-details">
+				<img ng-src="/static/data/icons/{{data.side===1?'w':'b'}}k.png" />
+				<h4>{{data.player}}</h4>
+			</div>
+			<div class="opponent-details">
+				<img ng-src="/static/data/icons/{{data.side===1?'b':'w'}}k.png" />
+				<h4>{{data.opponent}}</h4>
+			</div>
+
+			<div ng-if="data.turn">{{data.side==1?"white":"black"}} to move</div>
+			<div ng-if="!data.turn">{{data.side==1?"black":"white"}} to move</div>
+		</div>
 	</div>
 </div>
