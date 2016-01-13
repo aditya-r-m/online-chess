@@ -6,6 +6,7 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
 app.openGames = [];
+app.runningGames = {};
 app.clients = {};
 
 app.use('/static', express.static(path.join(__dirname, '/static/')));
@@ -54,6 +55,10 @@ io.on("connection", function (socket) {
 	});
 
 	socket.on("join-game", function (data) {
+
+		app.runningGames[data.owner] = app.clients['/#' + data.opponent];
+		app.runningGames[data.opponent] = app.clients['/#' + data.owner];
+
 		data.owner = '/#' + data.owner;
 		data.opponent = '/#' + data.opponent;
 
@@ -88,6 +93,10 @@ io.on("connection", function (socket) {
 
 		app.clients[data.owner].emit("game-created", data.gameData);
 		app.clients[data.opponent].emit("game-created");
+	});
+
+	socket.on("move-made", function (data) {
+		app.runningGames[data.source].emit("move-made", data);
 	});
 });
 

@@ -29,7 +29,7 @@ angular.module("chess", ["ui.router"])
 	this.picked = false;
 })
 
-.controller("GameController", ['$scope', 'gameData', function ($scope, gameData) {
+.controller("GameController", ['$scope', 'gameData', 'socketService', function ($scope, gameData, socketService) {
 	$scope.board = [];
 	for (var i = 0; i < 8; i++) {
 		$scope.board.push([]);
@@ -69,9 +69,34 @@ angular.module("chess", ["ui.router"])
 	$scope.livePieces[30] = $scope.board[7][6].piece = new knight(7, 6, -1, 'n');
 	$scope.livePieces[31] = $scope.board[7][7].piece = new rook(7, 7, -1, 'r');
 
+	socketService.socket.on("move-made", function (data) {
+		if (!$scope.board[data.nr][data.nf].piece) {
+			$scope.board[data.nr][data.nf].piece = $scope.board[data.or][data.of].piece;
+			$scope.board[data.or][data.of].piece = undefined;
+			$scope.board[data.nr][data.nf].piece.rank = data.nr;
+			$scope.board[data.nr][data.nf].piece.file = data.nf;
+		} else {
+			$scope.capturedPieces.push($scope.board[data.nr][data.nf].piece);
+			$scope.livePieces.splice($scope.livePieces.indexOf($scope.board[data.nr][data.nf].piece), 1);
+
+			$scope.board[data.nr][data.nf].piece = $scope.board[data.or][data.of].piece;
+			$scope.board[data.or][data.of].piece = undefined;
+			$scope.board[data.nr][data.nf].piece.rank = data.nr;
+			$scope.board[data.nr][data.nf].piece.file = data.nf;
+		}
+		$scope.data.turn = true;
+		$scope.$apply();
+	});
+
 	$scope.selectSquare = function (r, f) {
+
+		if (!$scope.data.turn)
+			return;
+
 		if (!$scope.data.picked) {
 			if ($scope.board[r][f].piece) {
+				if ($scope.board[r][f].piece.side != $scope.data.side)
+					return;
 				$scope.data.picked = {
 					"r": r,
 					"f": f
@@ -84,6 +109,16 @@ angular.module("chess", ["ui.router"])
 			}
 
 		} else {
+
+			if ($scope.board[r][f].highlightedMove || $scope.board[r][f].highlightedCapture)
+				socketService.socket.emit("move-made", {
+					"or": $scope.data.picked.r,
+					"of": $scope.data.picked.f,
+					"nr": r,
+					"nf": f,
+					"source": socketService.socket.id
+				});
+
 			if ($scope.board[r][f].highlightedMove) {
 				$scope.board[r][f].piece = $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece;
 				$scope.board[$scope.data.picked.r][$scope.data.picked.f].piece = undefined;
@@ -101,6 +136,7 @@ angular.module("chess", ["ui.router"])
 
 			}
 			$scope.data.picked = false;
+			$scope.data.turn = false;
 			if ($scope.data.lists) {
 				for (var x in $scope.data.lists.move)
 					$scope.board[$scope.data.lists.move[x].rank][$scope.data.lists.move[x].file].highlightedMove = false;
@@ -151,9 +187,12 @@ angular.module("chess", ["ui.router"])
 
 			gameData.player = $scope.userName === "" ? "Anonymous" : $scope.userName;
 
-			gameData.side = (data.side == "white") ? -1 : 1;
+			gameData.side = -data.side;
 
-			gameData.turn = (data.side == "white") ? false : true;
+			gameData.turn = !data.turn;
+
+			console.log(data.side + "  " + gameData.side + "   " + gameData.turn);
+
 		}
 
 		$state.go("game");
@@ -178,11 +217,13 @@ angular.module("chess", ["ui.router"])
 
 		gameData.player = $scope.userName === "" ? "Anonymous" : $scope.userName;
 
-		gameData.side = (side == "white") ? 1 : -1;
+		gameData.side = (side === "white") ? 1 : -1;
 
-		gameData.turn = (side == "white") ? true : false;
+		gameData.turn = (side === "white") ? true : false;
 
 		gameData.started = true;
+
+		console.log(side + "  " + gameData.side + "   " + gameData.turn);
 
 		socketService.socket.emit("join-game", {
 			'owner': id,
