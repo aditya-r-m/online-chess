@@ -110,7 +110,7 @@ angular.module("chess", ["ui.router"])
 
 		} else {
 
-			if ($scope.board[r][f].highlightedMove || $scope.board[r][f].highlightedCapture)
+			if ($scope.board[r][f].highlightedMove || $scope.board[r][f].highlightedCapture) {
 				socketService.socket.emit("move-made", {
 					"or": $scope.data.picked.r,
 					"of": $scope.data.picked.f,
@@ -118,6 +118,8 @@ angular.module("chess", ["ui.router"])
 					"nf": f,
 					"source": socketService.socket.id
 				});
+				$scope.data.turn = false;
+			}
 
 			if ($scope.board[r][f].highlightedMove) {
 				$scope.board[r][f].piece = $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece;
@@ -136,7 +138,6 @@ angular.module("chess", ["ui.router"])
 
 			}
 			$scope.data.picked = false;
-			$scope.data.turn = false;
 			if ($scope.data.lists) {
 				for (var x in $scope.data.lists.move)
 					$scope.board[$scope.data.lists.move[x].rank][$scope.data.lists.move[x].file].highlightedMove = false;
