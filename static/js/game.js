@@ -36,7 +36,8 @@ angular.module("chess", ["ui.router"])
 		for (var j = 0; j < 8; j++)
 			$scope.board[i].push({
 				'rank': i,
-				'file': j
+				'file': j,
+				'threatCount': threatCount
 			});
 	}
 

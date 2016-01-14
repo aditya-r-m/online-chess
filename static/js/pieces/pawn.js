@@ -2,16 +2,13 @@ function pawn(rank, file, side, type) {
 	return new piece(rank, file, side, type, function (board) {
 
 		var stepsM = [[this.side, 0]];
-		var steps = [];
+		var stepsK = [];
 		var m = [];
 		var k = [];
-
-		console.log(this);
 
 		if ((!board[this.rank + this.side][this.file].piece) && ((this.side == 1 && this.rank == 1) || (this.side == -1 && this.rank == 6)))
 			stepsM.push([this.side + this.side, 0]);
 
-		var stepsK = [];
 		if (this.file > 0)
 			stepsK.push([this.side, -1]);
 		if (this.file < 7)

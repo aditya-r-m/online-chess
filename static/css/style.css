@@ -4,7 +4,6 @@ body {
 	background: -o-linear-gradient(white, #999999);
 	background: -moz-linear-gradient(white, #999999);
 	background: linear-gradient(white, #999999);
-	height: 100%;
 }
 .list-box {
 	margin: auto;
@@ -59,8 +58,8 @@ body {
 	border: 1px solid black;
 }
 .chessboard {
-	width: 800px;
-	height: 802px;
+	width: 720px;
+	height: 722px;
 	padding: 0px;
 	border: 1px solid black;
 }
