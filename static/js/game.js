@@ -46,6 +46,7 @@ angular.module("chess", ["ui.router"])
 	$scope.livePieces = new Array(32);
 	$scope.capturedPieces = [];
 
+
 	$scope.livePieces[0] = $scope.board[0][0].piece = new rook(0, 0, 1, 'r');
 	$scope.livePieces[1] = $scope.board[0][1].piece = new knight(0, 1, 1, 'n');
 	$scope.livePieces[2] = $scope.board[0][2].piece = new bishop(0, 2, 1, 'b');
@@ -120,6 +121,19 @@ angular.module("chess", ["ui.router"])
 					"source": socketService.socket.id
 				});
 				$scope.data.turn = false;
+
+				for (var i = 0; i < 8; i++) {
+					s = '';
+					for (var j = 0; j < 8; j++)
+						s += $scope.board[i][j].threatCount($scope.board, 1) + "  ";
+					console.log(s);
+				}
+				for (var i = 0; i < 8; i++) {
+					s = '';
+					for (var j = 0; j < 8; j++)
+						s += $scope.board[i][j].threatCount($scope.board, -1) + "  ";
+					console.log(s);
+				}
 			}
 
 			if ($scope.board[r][f].highlightedMove) {
@@ -192,9 +206,6 @@ angular.module("chess", ["ui.router"])
 			gameData.side = -data.side;
 
 			gameData.turn = !data.turn;
-
-			console.log(data.side + "  " + gameData.side + "   " + gameData.turn);
-
 		}
 
 		$state.go("game");
@@ -224,8 +235,6 @@ angular.module("chess", ["ui.router"])
 		gameData.turn = (side === "white") ? true : false;
 
 		gameData.started = true;
-
-		console.log(side + "  " + gameData.side + "   " + gameData.turn);
 
 		socketService.socket.emit("join-game", {
 			'owner': id,

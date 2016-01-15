@@ -10,9 +10,6 @@ function king(rank, file, side, type) {
 				if ((i !== 0 || j !== 0) && (this.rank + i >= 0 && this.rank + i < 8) && (this.file + j >= 0 && this.file + j < 8))
 					steps.push([i, j]);
 
-
-		console.log(board);
-		console.log(steps);
 		for (var x = 0; x < steps.length; x++)
 			if (!board[this.rank + steps[x][0]][this.file + steps[x][1]].piece)
 				m.push({
