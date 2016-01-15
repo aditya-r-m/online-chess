@@ -121,19 +121,6 @@ angular.module("chess", ["ui.router"])
 					"source": socketService.socket.id
 				});
 				$scope.data.turn = false;
-
-				for (var i = 0; i < 8; i++) {
-					s = '';
-					for (var j = 0; j < 8; j++)
-						s += $scope.board[i][j].threatCount($scope.board, 1) + "  ";
-					console.log(s);
-				}
-				for (var i = 0; i < 8; i++) {
-					s = '';
-					for (var j = 0; j < 8; j++)
-						s += $scope.board[i][j].threatCount($scope.board, -1) + "  ";
-					console.log(s);
-				}
 			}
 
 			if ($scope.board[r][f].highlightedMove) {
