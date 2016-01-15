@@ -1,7 +1,6 @@
 <!-- AngularJS based template for displaying the chessboard and the current state of the game -->
 
 <div class="game-container" ng-controller="GameController">
-
 	<div class="container chessboard">
 		<div class="row" ng-repeat="row in board track by $index">
 			<div class="square" ng-repeat="square in row track by $index" ng-class="{'even':(square.rank+square.file)%2===0,'odd':(square.rank+square.file)%2!==0,'highlighted-move':square.highlightedMove,'highlighted-capture':square.highlightedCapture}" ng-click="selectSquare($parent.$index,$index)">
