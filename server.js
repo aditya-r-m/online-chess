@@ -7,6 +7,7 @@ var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
+/*
 var exec = require('child_process').execFile;
 
 var fun = function () {
@@ -17,7 +18,7 @@ var fun = function () {
 	});
 }
 fun();
-
+*/
 
 app.openGames = [];
 app.runningGames = {};

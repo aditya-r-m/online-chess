@@ -46,11 +46,11 @@ angular.module("chess", ["ui.router"])
 	$scope.livePieces = new Array(32);
 	$scope.capturedPieces = [];
 
-	$scope.livePieces[0] = $scope.board[0][0].piece = new rook(0, 0, 1, 'r');
-	$scope.livePieces[1] = $scope.board[0][1].piece = new knight(0, 1, 1, 'n');
+	$scope.livePieces[4] = $scope.board[0][0].piece = new rook(0, 0, 1, 'r');
+	$scope.livePieces[28] = $scope.board[0][1].piece = new knight(0, 1, 1, 'n');
 	$scope.livePieces[2] = $scope.board[0][2].piece = new bishop(0, 2, 1, 'b');
-	$scope.livePieces[3] = $scope.board[0][3].piece = new queen(0, 3, 1, 'q');
-	$scope.livePieces[4] = $scope.board[0][4].piece = new king(0, 4, 1, 'k');
+	$scope.livePieces[0] = $scope.board[0][3].piece = new king(0, 3, 1, 'k');
+	$scope.livePieces[3] = $scope.board[0][4].piece = new queen(0, 4, 1, 'q');
 	$scope.livePieces[5] = $scope.board[0][5].piece = new bishop(0, 5, 1, 'b');
 	$scope.livePieces[6] = $scope.board[0][6].piece = new knight(0, 6, 1, 'n');
 	$scope.livePieces[7] = $scope.board[0][7].piece = new rook(0, 7, 1, 'r');
@@ -64,8 +64,8 @@ angular.module("chess", ["ui.router"])
 	$scope.livePieces[24] = $scope.board[7][0].piece = new rook(7, 0, -1, 'r');
 	$scope.livePieces[25] = $scope.board[7][1].piece = new knight(7, 1, -1, 'n');
 	$scope.livePieces[26] = $scope.board[7][2].piece = new bishop(7, 2, -1, 'b');
-	$scope.livePieces[27] = $scope.board[7][3].piece = new queen(7, 3, -1, 'q');
-	$scope.livePieces[28] = $scope.board[7][4].piece = new king(7, 4, -1, 'k');
+	$scope.livePieces[1] = $scope.board[7][3].piece = new king(7, 3, -1, 'k');
+	$scope.livePieces[27] = $scope.board[7][4].piece = new queen(7, 4, -1, 'q');
 	$scope.livePieces[29] = $scope.board[7][5].piece = new bishop(7, 5, -1, 'b');
 	$scope.livePieces[30] = $scope.board[7][6].piece = new knight(7, 6, -1, 'n');
 	$scope.livePieces[31] = $scope.board[7][7].piece = new rook(7, 7, -1, 'r');
@@ -102,7 +102,7 @@ angular.module("chess", ["ui.router"])
 					"r": r,
 					"f": f
 				};
-				$scope.data.lists = refineLegalMoves($scope.board, $scope.board[r][f].piece.legalMoves($scope.board), r, f, $scope.board[r][f].side, $scope.board[r][f].type);
+				$scope.data.lists = refineLegalMoves($scope.board, $scope.board[r][f].piece.legalMoves($scope.board), r, f, $scope.board[r][f].piece.side, $scope.board[r][f].piece.type);
 				for (var x in $scope.data.lists.move)
 					$scope.board[$scope.data.lists.move[x].rank][$scope.data.lists.move[x].file].highlightedMove = true;
 				for (var x in $scope.data.lists.capture)
@@ -119,6 +119,15 @@ angular.module("chess", ["ui.router"])
 					"nf": f,
 					"source": socketService.socket.id
 				});
+				if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'k') {
+					$scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.kingMoved = true;
+				} else if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'r') {
+					var side = $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.side === 1 ? 0 : 1;
+					if ((r == 0 || r == 7) && f == 0)
+						$scope.livePieces[side].rookAMoved = true;
+					if ((r == 0 || r == 7) && f == 7)
+						$scope.livePieces[side].rookHMoved = true;
+				}
 				$scope.data.turn = false;
 			}
 
@@ -149,7 +158,7 @@ angular.module("chess", ["ui.router"])
 		}
 	};
 
-}])
+			}])
 
 .controller("listController", ['$scope', 'socketService', 'gameData', '$state', function ($scope, socketService, gameData, $state) {
 
