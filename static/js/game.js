@@ -102,7 +102,7 @@ angular.module("chess", ["ui.router"])
 					"r": r,
 					"f": f
 				};
-				$scope.data.lists = $scope.board[r][f].piece.legalMoves($scope.board);
+				$scope.data.lists = refineLegalMoves($scope.board, $scope.board[r][f].piece.legalMoves($scope.board), r, f, $scope.board[r][f].side, $scope.board[r][f].type);
 				for (var x in $scope.data.lists.move)
 					$scope.board[$scope.data.lists.move[x].rank][$scope.data.lists.move[x].file].highlightedMove = true;
 				for (var x in $scope.data.lists.capture)
