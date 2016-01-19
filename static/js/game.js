@@ -71,6 +71,16 @@ angular.module("chess", ["ui.router"])
 	$scope.livePieces[31] = $scope.board[7][7].piece = new rook(7, 7, -1, 'r');
 
 	socketService.socket.on("move-made", function (data) {
+		if ($scope.board[data.or][data.of].piece.type === 'k' && Math.abs(data.nf - data.of) > 1) {
+			var nf, of, or, nr;
+			nr = or = data.or;
+			of = (data.nf < 3) ? 0 : 7;
+			nf = (data.nf < 3) ? 2 : 4;
+			$scope.board[nr][nf].piece = $scope.board[or][of].piece;
+			$scope.board[or][of].piece = undefined;
+			$scope.board[nr][nf].piece.rank = or;
+			$scope.board[nr][nf].piece.file = of;
+		}
 		if (!$scope.board[data.nr][data.nf].piece) {
 			$scope.board[data.nr][data.nf].piece = $scope.board[data.or][data.of].piece;
 			$scope.board[data.or][data.of].piece = undefined;
@@ -105,6 +115,8 @@ angular.module("chess", ["ui.router"])
 				$scope.data.lists = refineLegalMoves($scope.board, $scope.board[r][f].piece.legalMoves($scope.board), r, f, $scope.board[r][f].piece.side, $scope.board[r][f].piece.type);
 				for (var x in $scope.data.lists.move)
 					$scope.board[$scope.data.lists.move[x].rank][$scope.data.lists.move[x].file].highlightedMove = true;
+				for (var x in $scope.data.lists.castle)
+					$scope.board[$scope.data.lists.castle[x].rank][$scope.data.lists.castle[x].file].highlightedMove = true;
 				for (var x in $scope.data.lists.capture)
 					$scope.board[$scope.data.lists.capture[x].rank][$scope.data.lists.capture[x].file].highlightedCapture = true;
 			}
@@ -132,10 +144,22 @@ angular.module("chess", ["ui.router"])
 			}
 
 			if ($scope.board[r][f].highlightedMove) {
+				if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'k' && Math.abs(f - $scope.data.picked.f) > 1) {
+					var nf, of, or, nr;
+					nr = or = r;
+					of = (f < 3) ? 0 : 7;
+					nf = (f < 3) ? 2 : 4;
+					$scope.board[nr][nf].piece = $scope.board[or][of].piece;
+					$scope.board[or][of].piece = undefined;
+					$scope.board[nr][nf].piece.rank = or;
+					$scope.board[nr][nf].piece.file = of;
+				}
+
 				$scope.board[r][f].piece = $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece;
 				$scope.board[$scope.data.picked.r][$scope.data.picked.f].piece = undefined;
 				$scope.board[r][f].piece.rank = r;
 				$scope.board[r][f].piece.file = f;
+
 			} else if ($scope.board[r][f].highlightedCapture) {
 
 				$scope.capturedPieces.push($scope.board[r][f].piece);
@@ -151,6 +175,8 @@ angular.module("chess", ["ui.router"])
 			if ($scope.data.lists) {
 				for (var x in $scope.data.lists.move)
 					$scope.board[$scope.data.lists.move[x].rank][$scope.data.lists.move[x].file].highlightedMove = false;
+				for (var x in $scope.data.lists.castle)
+					$scope.board[$scope.data.lists.castle[x].rank][$scope.data.lists.castle[x].file].highlightedMove = false;
 				for (var x in $scope.data.lists.capture)
 					$scope.board[$scope.data.lists.capture[x].rank][$scope.data.lists.capture[x].file].highlightedCapture = false;
 
@@ -158,7 +184,7 @@ angular.module("chess", ["ui.router"])
 		}
 	};
 
-			}])
+}])
 
 .controller("listController", ['$scope', 'socketService', 'gameData', '$state', function ($scope, socketService, gameData, $state) {
 
