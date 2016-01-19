@@ -7,6 +7,18 @@ var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
+var exec = require('child_process').execFile;
+
+var fun = function () {
+	console.log("fun() start");
+	exec('./stockfish/bin/stockfish.exe', ["position rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"], function (err, data) {
+		console.log(err)
+		console.log(data.toString());
+	});
+}
+fun();
+
+
 app.openGames = [];
 app.runningGames = {};
 app.clients = {};

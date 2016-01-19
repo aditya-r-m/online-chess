@@ -46,7 +46,6 @@ angular.module("chess", ["ui.router"])
 	$scope.livePieces = new Array(32);
 	$scope.capturedPieces = [];
 
-
 	$scope.livePieces[0] = $scope.board[0][0].piece = new rook(0, 0, 1, 'r');
 	$scope.livePieces[1] = $scope.board[0][1].piece = new knight(0, 1, 1, 'n');
 	$scope.livePieces[2] = $scope.board[0][2].piece = new bishop(0, 2, 1, 'b');
