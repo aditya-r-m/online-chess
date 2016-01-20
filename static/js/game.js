@@ -83,25 +83,26 @@ angular.module("chess", ["ui.router"])
 			$scope.board[nr][nf].piece.file = of;
 		}
 
-		if ($scope.board[data.or][data.of].piece.type === 'p' && Math.abs(data.nr - data.or) > 1) {
-			$scope.data.enPassant = {
-				"rank": data.nr - $scope.board[data.or][data.of].piece.side,
-				"file": data.nf
-			};
-		} else
-			$scope.data.enPassant = undefined;
+		var capturingEnPassant = false;
 
-		if (!$scope.board[data.nr][data.nf].piece) {
+		if ($scope.data.enPassant && $scope.board[data.or][data.of].piece.type === 'p' && data.nr === $scope.data.enPassant.rank && data.nf === $scope.data.enPassant.file)
+			capturingEnPassant = true;
+
+		if (!$scope.board[data.nr][data.nf].piece && !capturingEnPassant) {
+
+			if ($scope.board[data.or][data.of].piece.type === 'p' && Math.abs(data.nr - data.or) > 1) {
+				$scope.data.enPassant = {
+					"rank": data.nr - $scope.board[data.or][data.of].piece.side,
+					"file": data.nf
+				};
+			} else
+				$scope.data.enPassant = undefined;
+
 			$scope.board[data.nr][data.nf].piece = $scope.board[data.or][data.of].piece;
 			$scope.board[data.or][data.of].piece = undefined;
 			$scope.board[data.nr][data.nf].piece.rank = data.nr;
 			$scope.board[data.nr][data.nf].piece.file = data.nf;
 		} else {
-
-			var capturingEnPassant = false;
-
-			if ($scope.board[data.or][data.of].piece.type === 'p' && data.nr === $scope.data.enPassant.rank && data.nf === $scope.data.enPassant.file)
-				capturingEnPassant = true;
 
 			if (capturingEnPassant)
 				data.nr = data.nr - $scope.board[data.or][data.of].piece.side;
@@ -222,6 +223,8 @@ angular.module("chess", ["ui.router"])
 					$scope.board[$scope.data.lists.castle[x].rank][$scope.data.lists.castle[x].file].highlightedMove = false;
 				for (var x in $scope.data.lists.capture)
 					$scope.board[$scope.data.lists.capture[x].rank][$scope.data.lists.capture[x].file].highlightedCapture = false;
+				if ($scope.data.lists.enPassantCapture)
+					$scope.board[$scope.data.lists.enPassantCapture.rank][$scope.data.lists.enPassantCapture.file].highlightedCapture = false;
 
 			}
 		}
