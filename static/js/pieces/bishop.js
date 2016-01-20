@@ -71,8 +71,7 @@ function bishop(rank, file, side, type) {
 
 		return {
 			move: m,
-			capture: k,
-			castle: undefined
+			capture: k
 		};
 
 	});

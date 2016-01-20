@@ -54,6 +54,5 @@ function king(rank, file, side, type) {
 			capture: k,
 			castle: c
 		};
-
 	});
 }

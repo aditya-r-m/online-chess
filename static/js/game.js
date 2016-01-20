@@ -27,6 +27,7 @@ angular.module("chess", ["ui.router"])
 	this.side = undefined;
 	this.turn = false;
 	this.picked = false;
+	this.enPassant = undefined;
 })
 
 .controller("GameController", ['$scope', 'gameData', 'socketService', function ($scope, gameData, socketService) {
@@ -81,14 +82,36 @@ angular.module("chess", ["ui.router"])
 			$scope.board[nr][nf].piece.rank = or;
 			$scope.board[nr][nf].piece.file = of;
 		}
+
+		if ($scope.board[data.or][data.of].piece.type === 'p' && Math.abs(data.nr - data.or) > 1) {
+			$scope.data.enPassant = {
+				"rank": data.nr - $scope.board[data.or][data.of].piece.side,
+				"file": data.nf
+			};
+		} else
+			$scope.data.enPassant = undefined;
+
 		if (!$scope.board[data.nr][data.nf].piece) {
 			$scope.board[data.nr][data.nf].piece = $scope.board[data.or][data.of].piece;
 			$scope.board[data.or][data.of].piece = undefined;
 			$scope.board[data.nr][data.nf].piece.rank = data.nr;
 			$scope.board[data.nr][data.nf].piece.file = data.nf;
 		} else {
+
+			var capturingEnPassant = false;
+
+			if ($scope.board[data.or][data.of].piece.type === 'p' && data.nr === $scope.data.enPassant.rank && data.nf === $scope.data.enPassant.file)
+				capturingEnPassant = true;
+
+			if (capturingEnPassant)
+				data.nr = data.nr - $scope.board[data.or][data.of].piece.side;
+
 			$scope.capturedPieces.push($scope.board[data.nr][data.nf].piece);
 			$scope.livePieces.splice($scope.livePieces.indexOf($scope.board[data.nr][data.nf].piece), 1);
+			$scope.board[data.nr][data.nf].piece = undefined;
+
+			if (capturingEnPassant)
+				data.nr = data.nr + $scope.board[data.or][data.of].piece.side;
 
 			$scope.board[data.nr][data.nf].piece = $scope.board[data.or][data.of].piece;
 			$scope.board[data.or][data.of].piece = undefined;
@@ -112,13 +135,15 @@ angular.module("chess", ["ui.router"])
 					"r": r,
 					"f": f
 				};
-				$scope.data.lists = refineLegalMoves($scope.board, $scope.board[r][f].piece.legalMoves($scope.board), r, f, $scope.board[r][f].piece.side, $scope.board[r][f].piece.type);
+				$scope.data.lists = refineLegalMoves($scope.board, $scope.board[r][f].piece.legalMoves($scope.board, $scope.data.enPassant), r, f, $scope.board[r][f].piece.side, $scope.board[r][f].piece.type);
 				for (var x in $scope.data.lists.move)
 					$scope.board[$scope.data.lists.move[x].rank][$scope.data.lists.move[x].file].highlightedMove = true;
 				for (var x in $scope.data.lists.castle)
 					$scope.board[$scope.data.lists.castle[x].rank][$scope.data.lists.castle[x].file].highlightedMove = true;
 				for (var x in $scope.data.lists.capture)
 					$scope.board[$scope.data.lists.capture[x].rank][$scope.data.lists.capture[x].file].highlightedCapture = true;
+				if ($scope.data.lists.enPassantCapture)
+					$scope.board[$scope.data.lists.enPassantCapture.rank][$scope.data.lists.enPassantCapture.file].highlightedCapture = true;
 			}
 
 		} else {
@@ -154,6 +179,13 @@ angular.module("chess", ["ui.router"])
 					$scope.board[nr][nf].piece.rank = or;
 					$scope.board[nr][nf].piece.file = of;
 				}
+				if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'p' && Math.abs(r - $scope.data.picked.r) > 1) {
+					$scope.data.enPassant = {
+						"rank": r - $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.side,
+						"file": f
+					};
+				} else
+					$scope.data.enPassant = undefined;
 
 				$scope.board[r][f].piece = $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece;
 				$scope.board[$scope.data.picked.r][$scope.data.picked.f].piece = undefined;
@@ -162,8 +194,19 @@ angular.module("chess", ["ui.router"])
 
 			} else if ($scope.board[r][f].highlightedCapture) {
 
+				var capturingEnPassant = false;
+
+				if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'p' && r === $scope.data.enPassant.rank && f === $scope.data.enPassant.file)
+					capturingEnPassant = true;
+
+				if (capturingEnPassant)
+					r = r - $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.side;
 				$scope.capturedPieces.push($scope.board[r][f].piece);
 				$scope.livePieces.splice($scope.livePieces.indexOf($scope.board[r][f].piece), 1);
+				$scope.board[r][f].piece = undefined;
+
+				if (capturingEnPassant)
+					r = r + $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.side;
 
 				$scope.board[r][f].piece = $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece;
 				$scope.board[$scope.data.picked.r][$scope.data.picked.f].piece = undefined;
