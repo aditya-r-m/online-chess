@@ -22,6 +22,7 @@
     "angular-bootstrap": "~0.14.3",
     "bootstrap-css-only": "~3.3.5",
     "angular-ui-router": "~0.2.15",
-    "requirejs": "~2.1.22"
+    "requirejs": "~2.1.22",
+    "angular-animate": "~1.4.8"
   }
 }

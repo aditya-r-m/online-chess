@@ -1,4 +1,4 @@
-angular.module("chess", ["ui.router"])
+angular.module("chess", ["ui.router", "ui.bootstrap"])
 
 .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
 
@@ -30,7 +30,7 @@ angular.module("chess", ["ui.router"])
 	this.enPassant = undefined;
 })
 
-.controller("GameController", ['$scope', 'gameData', 'socketService', function ($scope, gameData, socketService) {
+.controller("GameController", ['$scope', 'gameData', 'socketService', '$uibModal', function ($scope, gameData, socketService, $uibModal) {
 	$scope.board = [];
 	for (var i = 0; i < 8; i++) {
 		$scope.board.push([]);
@@ -88,15 +88,16 @@ angular.module("chess", ["ui.router"])
 		if ($scope.data.enPassant && $scope.board[data.or][data.of].piece.type === 'p' && data.nr === $scope.data.enPassant.rank && data.nf === $scope.data.enPassant.file)
 			capturingEnPassant = true;
 
-		if (!$scope.board[data.nr][data.nf].piece && !capturingEnPassant) {
 
-			if ($scope.board[data.or][data.of].piece.type === 'p' && Math.abs(data.nr - data.or) > 1) {
-				$scope.data.enPassant = {
-					"rank": data.nr - $scope.board[data.or][data.of].piece.side,
-					"file": data.nf
-				};
-			} else
-				$scope.data.enPassant = undefined;
+		if ($scope.board[data.or][data.of].piece.type === 'p' && Math.abs(data.nr - data.or) > 1) {
+			$scope.data.enPassant = {
+				"rank": data.nr - $scope.board[data.or][data.of].piece.side,
+				"file": data.nf
+			};
+		} else
+			$scope.data.enPassant = undefined;
+
+		if (!$scope.board[data.nr][data.nf].piece && !capturingEnPassant) {
 
 			$scope.board[data.nr][data.nf].piece = $scope.board[data.or][data.of].piece;
 			$scope.board[data.or][data.of].piece = undefined;
@@ -119,9 +120,28 @@ angular.module("chess", ["ui.router"])
 			$scope.board[data.nr][data.nf].piece.rank = data.nr;
 			$scope.board[data.nr][data.nf].piece.file = data.nf;
 		}
+
+		if (data.promoteTo)
+			$scope.promotePawn(data.nr, data.nf, data.promoteTo);
 		$scope.data.turn = true;
 		$scope.$apply();
 	});
+
+	$scope.promotePawn = function (rank, file, type) {
+		var pieceSide = rank === 0 ? -1 : 1;
+		var promoted;
+		if (type === 'q')
+			promoted = new queen(rank, file, pieceSide, type);
+		else if (type === 'r')
+			promoted = new rook(rank, file, pieceSide, type);
+		else if (type === 'b')
+			promoted = new bishop(rank, file, pieceSide, type);
+		else if (type === 'n')
+			promoted = new knight(rank, file, pieceSide, type);
+
+		$scope.livePieces[$scope.livePieces.indexOf($scope.board[rank][file])] = promoted;
+		$scope.board[rank][file].piece = promoted;
+	};
 
 	$scope.selectSquare = function (r, f) {
 
@@ -150,13 +170,7 @@ angular.module("chess", ["ui.router"])
 		} else {
 
 			if ($scope.board[r][f].highlightedMove || $scope.board[r][f].highlightedCapture) {
-				socketService.socket.emit("move-made", {
-					"or": $scope.data.picked.r,
-					"of": $scope.data.picked.f,
-					"nr": r,
-					"nf": f,
-					"source": socketService.socket.id
-				});
+
 				if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'k') {
 					$scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.kingMoved = true;
 				} else if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'r') {
@@ -180,13 +194,6 @@ angular.module("chess", ["ui.router"])
 					$scope.board[nr][nf].piece.rank = or;
 					$scope.board[nr][nf].piece.file = of;
 				}
-				if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'p' && Math.abs(r - $scope.data.picked.r) > 1) {
-					$scope.data.enPassant = {
-						"rank": r - $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.side,
-						"file": f
-					};
-				} else
-					$scope.data.enPassant = undefined;
 
 				$scope.board[r][f].piece = $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece;
 				$scope.board[$scope.data.picked.r][$scope.data.picked.f].piece = undefined;
@@ -197,7 +204,7 @@ angular.module("chess", ["ui.router"])
 
 				var capturingEnPassant = false;
 
-				if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'p' && r === $scope.data.enPassant.rank && f === $scope.data.enPassant.file)
+				if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'p' && $scope.data.enPassant && r === $scope.data.enPassant.rank && f === $scope.data.enPassant.file)
 					capturingEnPassant = true;
 
 				if (capturingEnPassant)
@@ -215,7 +222,62 @@ angular.module("chess", ["ui.router"])
 				$scope.board[r][f].piece.file = f;
 
 			}
-			$scope.data.picked = false;
+			if ($scope.board[r][f].highlightedMove || $scope.board[r][f].highlightedCapture) {
+
+				var or = $scope.data.picked.r,
+					of = $scope.data.picked.f,
+					nr = r,
+					nf = f;
+
+				if ($scope.board[nr][nf].piece.type === 'p' && Math.abs(nr - or) > 1) {
+					$scope.data.enPassant = {
+						"rank": nr - $scope.board[nr][nf].piece.side,
+						"file": nf
+					};
+				} else
+					$scope.data.enPassant = undefined;
+
+				if ($scope.board[nr][nf].piece.type === 'p' && (nr === 0 || nr === 7)) {
+					$scope.selection = {};
+					var modal = $uibModal.open({
+						animation: true,
+						templateUrl: "/static/templates/promotion.html",
+						controller: "promotionController",
+						resolve: {
+							side: function () {
+								return $scope.data.side;
+							},
+							selection: function () {
+								return $scope.selection;
+							}
+						}
+					});
+
+					modal.result.then(function () {
+						console.log("succes callback - never used");
+					}, function () {
+						var promotionType = $scope.selection.value;
+						console.log(promotionType);
+						$scope.promotePawn(nr, nf, promotionType);
+						socketService.socket.emit("move-made", {
+							"or": or,
+							"of": of,
+							"nr": nr,
+							"nf": nf,
+							"source": socketService.socket.id,
+							"promoteTo": promotionType
+						});
+					});
+				} else
+					socketService.socket.emit("move-made", {
+						"or": or,
+						"of": of,
+						"nr": nr,
+						"nf": nf,
+						"source": socketService.socket.id
+					});
+			}
+
 			if ($scope.data.lists) {
 				for (var x in $scope.data.lists.move)
 					$scope.board[$scope.data.lists.move[x].rank][$scope.data.lists.move[x].file].highlightedMove = false;
@@ -225,8 +287,8 @@ angular.module("chess", ["ui.router"])
 					$scope.board[$scope.data.lists.capture[x].rank][$scope.data.lists.capture[x].file].highlightedCapture = false;
 				if ($scope.data.lists.enPassantCapture)
 					$scope.board[$scope.data.lists.enPassantCapture.rank][$scope.data.lists.enPassantCapture.file].highlightedCapture = false;
-
 			}
+			$scope.data.picked = false;
 		}
 	};
 
@@ -308,5 +370,15 @@ angular.module("chess", ["ui.router"])
 			'opponent': socketService.socket.id,
 			'gameData': gameData
 		});
+	}
+}])
+
+.controller('promotionController', ['$scope', '$uibModalInstance', 'side', 'selection', function ($scope, $uibModalInstance, side, selection) {
+	selection.value = 'q';
+	$scope.side = side;
+	$scope.pieces = ['n', 'b', 'r', 'q'];
+	$scope.select = function (i) {
+		selection.value = $scope.pieces[i];
+		$uibModalInstance.dismiss();
 	}
 }]);

@@ -1,0 +1,10 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<h4 class="modal-title">Select a piece for pawn prmotion!</h4>
+	</div>
+	<div class="modal-body row">
+		<div ng-repeat="piece in pieces" class="col-xs-3">
+			<img ng-src="/static/data/icons/{{((data.side===1)?'w':'b')+piece}}.png" ng-click="select($index)" />
+		</div>
+	</div>
+</div>
