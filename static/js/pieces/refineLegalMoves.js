@@ -8,7 +8,7 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
         }
         for (var i = 0; i < moveLists.capture.length;) {
             if (board[moveLists.capture[i].rank][moveLists.capture[i].file].threats(board, -side).count > 0)
-                moveLists.move.splice(i, 1);
+                moveLists.capture.splice(i, 1);
             else
                 i++;
         }
@@ -17,7 +17,9 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
         var inr,
             inf,
             straightPin = false,
-            diagonalPin = false;
+            diagonalPin = false,
+            blockerPresent = false,
+            pinned = false;
 
         if (king.rank === rank) {
             inr = 0;
@@ -47,6 +49,65 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
                 inf = -1;
             }
             diagonalPin = true;
+        }
+
+        if (straightPin || diagonalPin)
+            for (var r = rank - inr, f = file - inf; r >= 0 && r < 8 && f >= 0 && f < 8; r -= inr, f -= inf) {
+                if (board[r][f]) {
+                    if (board[r][f] === king)
+                        break;
+                    else {
+                        blockerPresent = true;
+                        break;
+                    }
+                }
+            }
+
+        if (!blockerPresent && (straightPin || diagonalPin)) {
+            for (var r = rank + inr, f = file + inf; r >= 0 && r < 8 && f >= 0 && f < 8; r += inr, f += inf)
+                if (board[r][f]) {
+                    if (board[r][f]) {
+                        if (board[r][f].piece.type == 'q' || (diagonalPin && board[r][f].piece.type = 'b') || (straightPin && board[r][f].piece.type == 'r'))
+                            pinned = true;
+                        break;
+                    }
+                }
+        }
+
+        if (pinned) {
+
+            for (x in moveLists)
+                for (var i = 0; i < moveLists[x].length;) {
+                    if (straightPin) {
+                        if (inr === 0) {
+                            if (moveLists[x][i].rank !== rank) {
+                                moveLists[x].splice(i, 1);
+                                i--;
+                            }
+                        } else {
+                            if (moveLists[x][i].file !== file) {
+                                moveLists[x].splice(i, 1);
+                                i--;
+
+                            }
+                        }
+                    }
+                    if (diagonalPin) {
+                        if (inr === inf) {
+                            if (moveLists[x][i].rank - moveLists[x][i].file !== rank - file) {
+                                moveLists[x].splice(i, 1);
+                                i--;
+                            }
+                        } else {
+                            if (moveLists[x][i].rank + moveLists[x][i].file !== rank + file) {
+                                moveLists[x].splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                    i++;
+                }
+
         }
 
 
