@@ -157,7 +157,7 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
                     } else if (king.rank - king.file === attacker.rank - attacker.file) {
                         inr = -1;
                         inf = -1;
-                        if (king.rank > rank) {
+                        if (king.rank > attacker.rank) {
                             inr = 1;
                             inf = 1;
                         }
