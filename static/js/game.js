@@ -123,7 +123,18 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
 
         if (data.promoteTo)
             $scope.promotePawn(data.nr, data.nf, data.promoteTo);
-        $scope.data.turn = true;
+
+        if (!hasMoves($scope.data.side, $scope.livePieces, $scope.board, $scope.data.enPassant)) {
+            var king = $scope.livePieces[$scope.data.side === 1 ? 0 : 1];
+            if ($scope.board[king.rank][king.file].threats($scope.board, -$scope.data.side).count > 0)
+                $scope.data.winner = -$scope.data.side;
+            else
+                $scope.data.winner = 0;
+            $scope.data.ended = true;
+            $scope.endGame($scope.data.winner);
+        } else {
+            $scope.data.turn = true;
+        }
         $scope.$apply();
     });
 
@@ -142,6 +153,19 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
         $scope.livePieces[$scope.livePieces.indexOf($scope.board[rank][file])] = promoted;
         $scope.board[rank][file].piece = promoted;
     };
+
+    $scope.endGame = function (side) {
+        var modal = $uibModal.open({
+            animation: true,
+            templateUrl: "/static/templates/GameOver.html",
+            controller: "resultController",
+            resolve: {
+                winner: function () {
+                    return side;
+                }
+            }
+        });
+    }
 
     $scope.selectSquare = function (r, f) {
 
@@ -258,7 +282,6 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
                         console.log("succes callback - never used");
                     }, function () {
                         var promotionType = $scope.selection.value;
-                        console.log(promotionType);
                         $scope.promotePawn(nr, nf, promotionType);
                         socketService.socket.emit("move-made", {
                             "or": or,
@@ -291,10 +314,17 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
             }
             $scope.data.picked = false;
 
+            if (!hasMoves(-$scope.data.side, $scope.livePieces, $scope.board, $scope.data.enPassant)) {
+                var king = $scope.livePieces[$scope.data.side === -1 ? 0 : 1];
+                if ($scope.board[king.rank][king.file].threats($scope.board, $scope.data.side).count > 0)
+                    $scope.data.winner = $scope.data.side;
+                else
+                    $scope.data.winner = 0;
+                $scope.endGame($scope.data.winner);
+                $scope.data.ended = true;
+            }
         }
-
     };
-
 }])
 
 .controller("listController", ['$scope', 'socketService', 'gameData', '$state', function ($scope, socketService, gameData, $state) {
@@ -384,4 +414,8 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
         selection.value = $scope.pieces[i];
         $uibModalInstance.dismiss();
     }
+}])
+
+.controller('resultController', ['$scope', 'winner', function ($scope, winner) {
+    $scope.winner = winner;
 }]);

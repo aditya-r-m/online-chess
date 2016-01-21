@@ -77,36 +77,37 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
         if (pinned) {
 
             for (var x in moveLists)
-                for (var i = 0; i < moveLists[x].length;) {
-                    if (straightPin) {
-                        if (inr === 0) {
-                            if (moveLists[x][i].rank !== rank) {
-                                moveLists[x].splice(i, 1);
-                                i--;
-                            }
-                        } else {
-                            if (moveLists[x][i].file !== file) {
-                                moveLists[x].splice(i, 1);
-                                i--;
+                if (moveLists[x])
+                    for (var i = 0; i < moveLists[x].length;) {
+                        if (straightPin) {
+                            if (inr === 0) {
+                                if (moveLists[x][i].rank !== rank) {
+                                    moveLists[x].splice(i, 1);
+                                    i--;
+                                }
+                            } else {
+                                if (moveLists[x][i].file !== file) {
+                                    moveLists[x].splice(i, 1);
+                                    i--;
 
+                                }
                             }
                         }
-                    }
-                    if (diagonalPin) {
-                        if (inr === inf) {
-                            if (moveLists[x][i].rank - moveLists[x][i].file !== rank - file) {
-                                moveLists[x].splice(i, 1);
-                                i--;
-                            }
-                        } else {
-                            if (moveLists[x][i].rank + moveLists[x][i].file !== rank + file) {
-                                moveLists[x].splice(i, 1);
-                                i--;
+                        if (diagonalPin) {
+                            if (inr === inf) {
+                                if (moveLists[x][i].rank - moveLists[x][i].file !== rank - file) {
+                                    moveLists[x].splice(i, 1);
+                                    i--;
+                                }
+                            } else {
+                                if (moveLists[x][i].rank + moveLists[x][i].file !== rank + file) {
+                                    moveLists[x].splice(i, 1);
+                                    i--;
+                                }
                             }
                         }
+                        i++;
                     }
-                    i++;
-                }
 
         }
 
@@ -119,7 +120,7 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
             } else {
                 var canCaptureAttacker = false;
                 var attacker = board[threatsToKing.list[0].rank][threatsToKing.list[0].file].piece;
-                for (var i = 0; i < moveLists.capture.length;)
+                for (var i = 0; i < moveLists.capture.length; i++)
                     if (moveLists.capture[i].file === attacker.file && moveLists.capture[i].rank === attacker.rank)
                         canCaptureAttacker = true;
 
@@ -164,13 +165,16 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
 
                     r = attacker.rank + inr;
                     f = attacker.file + inf;
-                    while (!board[r][f].piece)
+                    while (!board[r][f].piece) {
                         criticalSquares.push({
                             "rank": r,
                             "file": f
                         });
+                        r += inr;
+                        f += inf;
+                    }
                     var found = false;
-                    for (var x in criticalSquares) {
+                    for (var x = 0; x < criticalSquares.length;) {
                         found = false;
                         for (var ii in moveLists.move)
                             if (criticalSquares[x].rank === moveLists.move[ii].rank && criticalSquares[x].file === moveLists.move[ii].file) {
@@ -179,10 +183,13 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
                             }
                         if (!found)
                             criticalSquares.splice(x, 1);
+                        else
+                            x++;
                     }
                 }
                 moveLists.move = criticalSquares;
             }
         }
-        return moveLists;
     }
+    return moveLists;
+}

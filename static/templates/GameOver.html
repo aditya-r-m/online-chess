@@ -1,0 +1,14 @@
+<div class="modal-content centered">
+    <div class="modal-header">
+        <h4 class="modal-title">Game Over!</h4>
+    </div>
+    <div class="modal-body row" ng-if="winner===1||winner===-1">
+        <img ng-src="/static/data/icons/{{((winner===1)?'w':'b')}}k.png" />
+        <h3>{{(winner===1)?'white':'black'}} won the game!</h3>
+    </div>
+    <div class="modal-body row" ng-if="winner===0">
+        <img ng-src="/static/data/icons/wk.png" />
+        <img ng-src="/static/data/icons/bk.png" />
+        <h3>The game resulted in a draw!</h3>
+    </div>
+</div>
