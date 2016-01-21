@@ -163,6 +163,6 @@ function threats(board, side) {
             }
     return {
         "count": c,
-        "list": threats;
+        "list": threats
     };
 }

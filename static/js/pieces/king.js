@@ -26,7 +26,7 @@ function king(rank, file, side, type) {
                 file: this.file + steps[x][1]
             });
 
-        if (!kingMoved && !(this.inCheck(board) > 0)) {
+        if (!kingMoved && !(board[rank][file].threats(board, -side).count > 0)) {
             if (!rookAMoved) {
                 if (!board[this.rank][2].piece && !board[this.rank][1].piece)
                     if (board[this.rank][2].threats(board, -this.side).count === 0 && board[this.rank][1].threats(board, -this.side).count === 0)

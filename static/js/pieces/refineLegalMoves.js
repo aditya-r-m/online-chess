@@ -21,6 +21,8 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
             blockerPresent = false,
             pinned = false;
 
+        console.log(king.rank + "  " + king.file + "  " + rank + "  " + file);
+
         if (king.rank === rank) {
             inr = 0;
             inf = 1;
@@ -53,8 +55,11 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
 
         if (straightPin || diagonalPin)
             for (var r = rank - inr, f = file - inf; r >= 0 && r < 8 && f >= 0 && f < 8; r -= inr, f -= inf) {
-                if (board[r][f]) {
-                    if (board[r][f] === king)
+                if (board[r][f].piece) {
+                    console.log(r + " " + f + " is loc");
+                    console.log(board[r][f].piece);
+                    console.log(king);
+                    if (board[r][f].piece === king)
                         break;
                     else {
                         blockerPresent = true;
@@ -63,14 +68,14 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
                 }
             }
 
+        console.log(blockerPresent + "  " + straightPin + "  " + diagonalPin);
+
         if (!blockerPresent && (straightPin || diagonalPin)) {
             for (var r = rank + inr, f = file + inf; r >= 0 && r < 8 && f >= 0 && f < 8; r += inr, f += inf)
-                if (board[r][f]) {
-                    if (board[r][f]) {
-                        if (board[r][f].piece.type == 'q' || (diagonalPin && board[r][f].piece.type = 'b') || (straightPin && board[r][f].piece.type == 'r'))
-                            pinned = true;
-                        break;
-                    }
+                if (board[r][f].piece) {
+                    if (board[r][f].piece.type === 'q' || (diagonalPin && board[r][f].piece.type === 'b') || (straightPin && board[r][f].piece.type === 'r'))
+                        pinned = true;
+                    break;
                 }
         }
 
