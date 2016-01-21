@@ -290,7 +290,9 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
                     $scope.board[$scope.data.lists.enPassantCapture.rank][$scope.data.lists.enPassantCapture.file].highlightedCapture = false;
             }
             $scope.data.picked = false;
+
         }
+
     };
 
 }])
