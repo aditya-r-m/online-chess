@@ -1,5 +1,5 @@
 function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
-    console.log(moveLists);
+
     if (type === 'k') {
         for (var i = 0; i < moveLists.move.length;) {
             if (board[moveLists.move[i].rank][moveLists.move[i].file].threats(board, -side).count > 0)
@@ -111,8 +111,27 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
         }
 
 
-        if (board[king.rank][king.file].threats(board, -side).count > 0) {
+        var threatsToKing = board[king.rank][king.file].threats(board, -side);
+        if (threatsToKing.count > 0) {
+            if (threatsToKing.count > 1) {
+                moveLists.capture = [];
+                moveLists.move = [];
+            } else {
+                var canCaptureAttacker = false;
+                for (var i = 0; i < moveLists.capture.length;)
+                    if (moveLists.capture[i].file === threatsToKing.list[0].file && moveLists.capture[i].rank === threatsToKing.list[0].rank)
+                        canCaptureAttacker = true;
 
+                if (canCaptureAttacker)
+                    moveLists.capture = [{
+                        "rank": threatsToKing.list[0].rank,
+                        "file": threatsToKing.list[0].file
+                    }];
+                else
+                    moveLists.capture = [];
+
+                var canBlockAttacker = false;
+            }
         }
     }
     return moveLists;
