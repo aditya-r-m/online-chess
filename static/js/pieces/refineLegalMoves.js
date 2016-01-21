@@ -118,21 +118,71 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
                 moveLists.move = [];
             } else {
                 var canCaptureAttacker = false;
+                var attacker = board[threatsToKing.list[0].rank][threatsToKing.list[0].file].piece;
                 for (var i = 0; i < moveLists.capture.length;)
-                    if (moveLists.capture[i].file === threatsToKing.list[0].file && moveLists.capture[i].rank === threatsToKing.list[0].rank)
+                    if (moveLists.capture[i].file === attacker.file && moveLists.capture[i].rank === attacker.rank)
                         canCaptureAttacker = true;
 
                 if (canCaptureAttacker)
                     moveLists.capture = [{
-                        "rank": threatsToKing.list[0].rank,
-                        "file": threatsToKing.list[0].file
+                        "rank": attacker.rank,
+                        "file": attacker.file
                     }];
                 else
                     moveLists.capture = [];
 
-                var canBlockAttacker = false;
+
+                var criticalSquares = [];
+
+                if (attacker.type === 'q' || attacker.type === 'r' || attacker.type === 'b') {
+
+                    if (king.rank === attacker.rank) {
+                        inr = 0;
+                        inf = -1;
+                        if (king.file > attacker.file)
+                            inf = 1;
+                    } else if (king.file === attacker.file) {
+                        inf = 0;
+                        inr = -1;
+                        if (king.rank > attacker.rank)
+                            inr = 1;
+                    } else if (king.rank + king.file === attacker.rank + attacker.file) {
+                        inr = -1;
+                        inf = 1;
+                        if (king.rank > attacker.rank) {
+                            inr = 1;
+                            inf = -1;
+                        }
+                    } else if (king.rank - king.file === attacker.rank - attacker.file) {
+                        inr = -1;
+                        inf = -1;
+                        if (king.rank > rank) {
+                            inr = 1;
+                            inf = 1;
+                        }
+                    }
+
+                    r = attacker.rank + inr;
+                    f = attacker.file + inf;
+                    while (!board[r][f].piece)
+                        criticalSquares.push({
+                            "rank": r,
+                            "file": f
+                        });
+                    var found = false;
+                    for (var x in criticalSquares) {
+                        found = false;
+                        for (var ii in moveLists.move)
+                            if (criticalSquares[x].rank === moveLists.move[ii].rank && criticalSquares[x].file === moveLists.move[ii].file) {
+                                found = true;
+                                break;
+                            }
+                        if (!found)
+                            criticalSquares.splice(x, 1);
+                    }
+                }
+                moveLists.move = criticalSquares;
             }
         }
+        return moveLists;
     }
-    return moveLists;
-}
