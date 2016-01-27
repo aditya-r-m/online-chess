@@ -7,12 +7,39 @@ var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
-/*
-var child = require("child_process").spawn('stockfish.exe', [], {
+var stockfishInstance = require("child_process").spawn('stockfish.exe', [], {
     stdio: [null, null, null, 'ipc']
 });
+stockfishInstance.command = function (commandString) {
+    this.stdin.write(commandString + '\n');
+};
 
-child.stdout.setEncoding('utf8');
+stockfishInstance.stdout.setEncoding('utf8');
+var currentStockfishClient = undefined,
+    waitingStockfishClients = [];
+
+stockfishInstance.stdout.on('data', function (data) {
+    var offset, bestmove;
+    if ((offset = data.indexOf("bestmove")) > -1) {
+        bestmove = data.substring(offset + 9, offset + 13);
+        currentStockfishClient.emit("move-made", {
+            "of": bestmove.charCodeAt(0) - "a".charCodeAt(0),
+            "or": parseInt(bestmove.charAt(1)),
+            "nf": bestmove.charCodeAt(2) - "a".charCodeAt(0),
+            "nr": parseInt(bestmove.charAt(3))
+        });
+
+        if (waitingStockfishClients.length === 0)
+            currentStockfishClient = undefined;
+        else {
+            currentStockfishClient = waitingStockfishClients.shift();
+            stockfishInstance.command(currentStockfishClient.positionString);
+            stockfishInstance.command(currentStockfishClient.searchString);
+        }
+    }
+});
+
+/*
 child.stdin.write('position rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\n');
 child.stdin.write('go 1000\n');
 child.stdout.on('data', function (data) {
@@ -116,7 +143,7 @@ io.on("connection", function (socket) {
         // if the joinee has a game as well, close it, since one user can only play one game at a time
         var j = app.clients[data.opponent].gameIndex;
 
-        if (j || j == 0) {
+        if (j || j === 0) {
 
             app.openGames.splice(j, 1);
 
@@ -139,7 +166,19 @@ io.on("connection", function (socket) {
 
     // whenever move is made, simply forward the data to the opponent by looking up the app.runningGames array
     socket.on("move-made", function (data) {
-        app.runningGames[data.source].emit("move-made", data);
+        if (!app.runningGames[data.source].againstStockfish)
+            app.runningGames[data.source].emit("move-made", data);
+        else {
+            if (!currentStockfishClient) {
+                currentStockfishClient = app.runningGames[data.source];
+                stockfishInstance.command(data.positionString);
+                stockfishInstance.command(data.searchString);
+            } else {
+                waitingStockfishClients.push(app.runningGames[data.source]);
+                waitingStockfishClients[waitingStockfishClients.length - 1].positionString = data.positionString;
+                waitingStockfishClients[waitingStockfishClients.length - 1].commandString = data.commandString;
+            }
+        }
     });
 });
 
