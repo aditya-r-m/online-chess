@@ -405,7 +405,7 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
             'owner': id,
             'opponent': socketService.socket.id,
             'gameData': gameData,
-            'againstStockfish': id === 0
+            'againstStockfish': (id === 0)
         });
 
         gameData.againstStockfish = (id === 0);

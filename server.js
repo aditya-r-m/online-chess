@@ -7,7 +7,7 @@ var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
-var stockfishInstance = require("child_process").spawn('stockfish.exe', [], {
+var stockfishInstance = require("child_process").spawn('./stockfish/bin/stockfish.exe', [], {
     stdio: [null, null, null, 'ipc']
 });
 stockfishInstance.command = function (commandString) {
@@ -141,35 +141,55 @@ io.on("connection", function (socket) {
                 'index': i
             });
 
-        }
-        // if the joinee has a game as well, close it, since one user can only play one game at a time
-        var j = app.clients[data.opponent].gameIndex;
+            // if the joinee has a game as well, close it, since one user can only play one game at a time
+            var j = app.clients[data.opponent].gameIndex;
 
-        if (j || j === 0) {
+            if (j || j === 0) {
 
-            app.openGames.splice(j, 1);
+                app.openGames.splice(j, 1);
 
-            for (var x in app.clients) {
-                if (app.clients[x].gameIndex > j)
-                    app.clients[x].gameIndex -= 1;
+                for (var x in app.clients) {
+                    if (app.clients[x].gameIndex > j)
+                        app.clients[x].gameIndex -= 1;
+                }
+
+                io.sockets.emit('remove-from-list', {
+                    'index': j
+                });
             }
 
-            io.sockets.emit('remove-from-list', {
-                'index': j
-            });
-        }
+        } else {
+            var j = this.gameIndex;
 
-        // emit game-created event to both the clients, also send opponent data to owner
-        if (!data.againstStockfish)
+            if (j || j === 0) {
+
+                app.openGames.splice(j, 1);
+
+                for (var x in app.clients) {
+                    if (app.clients[x].gameIndex > j)
+                        app.clients[x].gameIndex -= 1;
+                }
+
+                io.sockets.emit('remove-from-list', {
+                    'index': j
+                });
+            }
+        }
+        if (!data.againstStockfish) {
+            // emit game-created event to both the clients, also send opponent data to owner
             app.clients[data.owner].emit("game-created", data.gameData);
 
-        // no need to send data to the joinee as the client already knows about the owner
-        app.clients[data.opponent].emit("game-created");
+            // no need to send data to the joinee as the client already knows about the owner
+            app.clients[data.opponent].emit("game-created");
+        } else {
+            this.emit("game-created");
+            this.againstStockfish = true;
+        }
     });
 
     // whenever move is made, simply forward the data to the opponent by looking up the app.runningGames array
     socket.on("move-made", function (data) {
-        if (!app.runningGames[data.source].againstStockfish)
+        if (!this.againstStockfish)
             app.runningGames[data.source].emit("move-made", data);
         else {
             if (!currentStockfishClient) {
