@@ -289,7 +289,8 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
                             "nr": nr,
                             "nf": nf,
                             "source": socketService.socket.id,
-                            "promoteTo": promotionType
+                            "promoteTo": promotionType,
+                            "againstStockfish": gameData.againstStockfish
                         });
                     });
                 } else
@@ -298,7 +299,8 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
                         "of": of,
                         "nr": nr,
                         "nf": nf,
-                        "source": socketService.socket.id
+                        "source": socketService.socket.id,
+                        "againstStockfish": gameData.againstStockfish
                     });
             }
 
@@ -396,13 +398,18 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
 
         gameData.turn = (side === "white") ? true : false;
 
+
         gameData.started = true;
 
         socketService.socket.emit("join-game", {
             'owner': id,
             'opponent': socketService.socket.id,
-            'gameData': gameData
+            'gameData': gameData,
+            'againstStockfish': id === 0
         });
+
+        gameData.againstStockfish = (id === 0);
+
     }
 }])
 

@@ -1,37 +1,51 @@
 <!-- AngularJS based template for listing all the open games and keeping them in sync with the server -->
 
 <div class="container list-box" ng-controller="listController">
-	<div class="page-header">
-		<h1>Open Games</h1>
-		<p>Join an open game or
-			<button id="create-new" class="btn btn-primary" ng-click="createGame()">Create new Game</button>
-			<input type="text" class="form-control" id="usr" ng-model="userName" placeholder="Your name here" size="11" ng-style="failed?{'border-color':'red'}:''">
-		</p>
+    <div class="page-header">
+        <h1>Open Games</h1>
+        <p>Join an open game or
+            <button id="create-new" class="btn btn-primary" ng-click="createGame()">Create new Game</button>
+            <input type="text" class="form-control" id="usr" ng-model="userName" placeholder="Your name here" size="11" ng-style="failed?{'border-color':'red'}:''">
+        </p>
 
-	</div>
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<th>Opponent</th>
-				<th>Side</th>
-				<th>Join Game</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="row in list">
-				<td>
-					{{row.player}}
-				</td>
-				<td ng-if="row.id!==id">
-					{{row.side}}
-				</td>
-				<td ng-if="row.id===id">
-					{{row.side=="white"?"black":"white"}}
-				</td>
-				<td>
-					<button class="btn btn-success" ng-click="joinGame(row.id,row.player,row.side)" ng-if="row.id!==id">Join</button>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Opponent</th>
+                <th>Side</th>
+                <th>Join Game</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Bot</td>
+                <td>White</td>
+                <td>
+                    <button class="btn btn-success" ng-click="joinGame('0','stockfish','white')">Join</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Bot</td>
+                <td>Black</td>
+                <td>
+                    <button class="btn btn-success" ng-click="joinGame('0','stockfish','black')">Join</button>
+                </td>
+            </tr>
+            <tr ng-repeat="row in list">
+                <td>
+                    {{row.player}}
+                </td>
+                <td ng-if="row.id!==id">
+                    {{row.side}}
+                </td>
+                <td ng-if="row.id===id">
+                    {{row.side=="white"?"black":"white"}}
+                </td>
+                <td>
+                    <button class="btn btn-success" ng-click="joinGame(row.id,row.player,row.side)" ng-if="row.id!==id">Join</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>

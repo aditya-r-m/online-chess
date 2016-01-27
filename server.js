@@ -120,26 +120,28 @@ io.on("connection", function (socket) {
 
         // add details to app.runningGames array, this will be useful when trasmitting move related data between the players
         // note that the key values DO NOT have '/#' prefix. This makes it suitable to directly feed client provided IDs
-        app.runningGames[data.owner] = app.clients['/#' + data.opponent];
-        app.runningGames[data.opponent] = app.clients['/#' + data.owner];
+        if (!data.againstStockfish) {
+            app.runningGames[data.owner] = app.clients['/#' + data.opponent];
+            app.runningGames[data.opponent] = app.clients['/#' + data.owner];
 
-        data.owner = '/#' + data.owner;
-        data.opponent = '/#' + data.opponent;
+            data.owner = '/#' + data.owner;
+            data.opponent = '/#' + data.opponent;
 
-        // remove the game which will be started now
-        var i = app.clients[data.owner].gameIndex;
+            // remove the game which will be started now
+            var i = app.clients[data.owner].gameIndex;
 
-        app.openGames.splice(i, 1);
+            app.openGames.splice(i, 1);
 
-        for (var x in app.clients) {
-            if (app.clients[x].gameIndex > i)
-                app.clients[x].gameIndex -= 1;
+            for (var x in app.clients) {
+                if (app.clients[x].gameIndex > i)
+                    app.clients[x].gameIndex -= 1;
+            }
+
+            io.sockets.emit('remove-from-list', {
+                'index': i
+            });
+
         }
-
-        io.sockets.emit('remove-from-list', {
-            'index': i
-        });
-
         // if the joinee has a game as well, close it, since one user can only play one game at a time
         var j = app.clients[data.opponent].gameIndex;
 
@@ -158,7 +160,8 @@ io.on("connection", function (socket) {
         }
 
         // emit game-created event to both the clients, also send opponent data to owner
-        app.clients[data.owner].emit("game-created", data.gameData);
+        if (!data.againstStockfish)
+            app.clients[data.owner].emit("game-created", data.gameData);
 
         // no need to send data to the joinee as the client already knows about the owner
         app.clients[data.opponent].emit("game-created");
