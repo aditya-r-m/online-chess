@@ -13,6 +13,41 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
             else
                 i++;
         }
+
+        var threats = board[rank][file].threats(board, -side).list;
+        for (var x in threats) {
+            var threateningPiece = board[threats[x].rank][threats[x].file].piece;
+            if (piece.type === 'q' || piece.type === 'b' || piece.type === 'r') {
+                var inr, inf;
+                if (piece.rank > rank)
+                    inr = -1;
+                else if (piece.rank === rank)
+                    inr = 0;
+                else
+                    inr = 1;
+
+                if (piece.file > file)
+                    inf = -1;
+                else if (piece.file === file)
+                    inf = 0;
+                else
+                    inf = 1;
+
+                var tr = rank + inr;
+                var tf = file + inf;
+
+                outer: for (var ii in moveLists)
+                    if (moveLists[ii]) {
+                        if (Array.isArray(moveLists[ii])) {
+                            for (var jj in moveLists[ii])
+                                if (moveLists[ii][jj].rank === tr && moveLists[ii][jj].file === tf) {
+                                    moveLists[ii].splice(jj, 1);
+                                    break outer;
+                                }
+                        }
+                    }
+            }
+        }
     } else {
 
         var inr,
