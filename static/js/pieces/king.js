@@ -5,9 +5,6 @@ function king(rank, file, side, type) {
         var m = [];
         var k = [];
         var c = [];
-        var rookAMoved = false,
-            rookHMoved = false,
-            kingMoved = false;
 
         for (var i = -1; i < 2; i++)
             for (var j = -1; j < 2; j++)
@@ -26,8 +23,8 @@ function king(rank, file, side, type) {
                 file: this.file + steps[x][1]
             });
 
-        if (!kingMoved && !(board[rank][file].threats(board, -side).count > 0)) {
-            if (!rookAMoved) {
+        if (!this.kingMoved && !(board[rank][file].threats(board, -side).count > 0)) {
+            if (!this.rookAMoved) {
                 if (!board[this.rank][2].piece && !board[this.rank][1].piece)
                     if (board[this.rank][2].threats(board, -this.side).count === 0 && board[this.rank][1].threats(board, -this.side).count === 0)
                         c.push({
@@ -35,7 +32,7 @@ function king(rank, file, side, type) {
                             file: 1
                         });
             }
-            if (!rookHMoved) {
+            if (!this.rookHMoved) {
                 if (!board[this.rank][4].piece && !board[this.rank][5].piece)
                     if (board[this.rank][4].threats(board, -this.side).count === 0 && board[this.rank][5].threats(board, -this.side).count === 0)
                         c.push({

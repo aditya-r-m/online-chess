@@ -20,13 +20,15 @@ var currentStockfishClient = undefined,
 
 stockfishInstance.stdout.on('data', function (data) {
     var offset, bestmove;
+    console.log(data);
     if ((offset = data.indexOf("bestmove")) > -1) {
         bestmove = data.substring(offset + 9, offset + 13);
+        console.log(bestmove);
         currentStockfishClient.emit("move-made", {
             "of": bestmove.charCodeAt(0) - "a".charCodeAt(0),
-            "or": parseInt(bestmove.charAt(1)),
+            "or": parseInt(bestmove.charAt(1)) - 1,
             "nf": bestmove.charCodeAt(2) - "a".charCodeAt(0),
-            "nr": parseInt(bestmove.charAt(3))
+            "nr": parseInt(bestmove.charAt(3)) - 1
         });
 
         if (waitingStockfishClients.length === 0)
@@ -192,12 +194,14 @@ io.on("connection", function (socket) {
         if (!this.againstStockfish)
             app.runningGames[data.source].emit("move-made", data);
         else {
+            console.log(data.positionString);
+            console.log(data.searchString);
             if (!currentStockfishClient) {
-                currentStockfishClient = app.runningGames[data.source];
+                currentStockfishClient = this;
                 stockfishInstance.command(data.positionString);
                 stockfishInstance.command(data.searchString);
             } else {
-                waitingStockfishClients.push(app.runningGames[data.source]);
+                waitingStockfishClients.push(this);
                 waitingStockfishClients[waitingStockfishClients.length - 1].positionString = data.positionString;
                 waitingStockfishClients[waitingStockfishClients.length - 1].commandString = data.commandString;
             }

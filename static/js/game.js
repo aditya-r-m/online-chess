@@ -44,6 +44,9 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
 
     $scope.data = gameData;
 
+    $scope.data.halfMoves = 0;
+    $scope.data.fullMoves = 1;
+
     $scope.livePieces = new Array(32);
     $scope.capturedPieces = [];
 
@@ -71,7 +74,35 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
     $scope.livePieces[30] = $scope.board[7][6].piece = new knight(7, 6, -1, 'n');
     $scope.livePieces[31] = $scope.board[7][7].piece = new rook(7, 7, -1, 'r');
 
+    if (gameData.againstStockfish && gameData.side === -1) {
+        var positionString = boardToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
+
+        socketService.socket.emit("move-made", {
+            "source": socketService.socket.id,
+            "againstStockfish": gameData.againstStockfish,
+            "positionString": positionString,
+            "searchString": "go 1000"
+        });
+    }
+
     socketService.socket.on("move-made", function (data) {
+
+        if ($scope.data.side === 1)
+            $scope.data.fullMoves++;
+
+        $scope.data.halfMoves++;
+
+        var king = $scope.livePieces[$scope.data.side === 1 ? 1 : 0];
+        if ($scope.board[data.or][data.of].piece.type === 'k') {
+            king.kingMoved = true;
+        } else if ($scope.board[data.or][data.of].piece.type === 'r') {
+            if ((data.or == 0 || data.or == 7) && data.of == 0)
+                king.rookAMoved = true;
+            if ((data.or == 0 || data.or == 7) && data.of == 7)
+                king.rookHMoved = true;
+        }
+
+
         if ($scope.board[data.or][data.of].piece.type === 'k' && Math.abs(data.nf - data.of) > 1) {
             var nf, of, or, nr;
             nr = or = data.or;
@@ -82,6 +113,9 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
             $scope.board[nr][nf].piece.rank = or;
             $scope.board[nr][nf].piece.file = of;
         }
+
+        if ($scope.board[data.or][data.of].piece.type === 'p')
+            $scope.data.halfMoves = 0;
 
         var capturingEnPassant = false;
 
@@ -104,6 +138,8 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
             $scope.board[data.nr][data.nf].piece.rank = data.nr;
             $scope.board[data.nr][data.nf].piece.file = data.nf;
         } else {
+
+            $scope.data.halfMoves = 0;
 
             if (capturingEnPassant)
                 data.nr = data.nr - $scope.board[data.or][data.of].piece.side;
@@ -196,19 +232,26 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
 
             if ($scope.board[r][f].highlightedMove || $scope.board[r][f].highlightedCapture) {
 
+                $scope.data.halfMoves++;
+                if ($scope.data.side === -1)
+                    $scope.data.fullMoves++;
+                var king = $scope.livePieces[$scope.data.side === 1 ? 0 : 1];
                 if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'k') {
-                    $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.kingMoved = true;
+                    king.kingMoved = true;
                 } else if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'r') {
-                    var side = $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.side === 1 ? 0 : 1;
                     if ((r == 0 || r == 7) && f == 0)
-                        $scope.livePieces[side].rookAMoved = true;
+                        king.rookAMoved = true;
                     if ((r == 0 || r == 7) && f == 7)
-                        $scope.livePieces[side].rookHMoved = true;
+                        king.rookHMoved = true;
                 }
                 $scope.data.turn = false;
             }
 
             if ($scope.board[r][f].highlightedMove) {
+
+                if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'p')
+                    $scope.data.halfMoves = 0;
+
                 if ($scope.board[$scope.data.picked.r][$scope.data.picked.f].piece.type === 'k' && Math.abs(f - $scope.data.picked.f) > 1) {
                     var nf, of, or, nr;
                     nr = or = r;
@@ -226,6 +269,8 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
                 $scope.board[r][f].piece.file = f;
 
             } else if ($scope.board[r][f].highlightedCapture) {
+
+                $scope.data.halfMoves = 0;
 
                 var capturingEnPassant = false;
 
@@ -283,6 +328,8 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
                     }, function () {
                         var promotionType = $scope.selection.value;
                         $scope.promotePawn(nr, nf, promotionType);
+                        if (gameData.againstStockfish)
+                            var positionString = boardToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
                         socketService.socket.emit("move-made", {
                             "or": or,
                             "of": of,
@@ -290,18 +337,27 @@ angular.module("chess", ["ui.router", "ui.bootstrap"])
                             "nf": nf,
                             "source": socketService.socket.id,
                             "promoteTo": promotionType,
-                            "againstStockfish": gameData.againstStockfish
+                            "againstStockfish": gameData.againstStockfish,
+                            "positionString": positionString,
+                            "searchString": "go 1000"
                         });
                     });
-                } else
+                } else {
+                    if (gameData.againstStockfish)
+                        var positionString = boardToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
+
                     socketService.socket.emit("move-made", {
                         "or": or,
                         "of": of,
                         "nr": nr,
                         "nf": nf,
                         "source": socketService.socket.id,
-                        "againstStockfish": gameData.againstStockfish
+                        "againstStockfish": gameData.againstStockfish,
+                        "positionString": positionString,
+                        "searchString": "go 1000"
                     });
+
+                }
             }
 
             if ($scope.data.lists) {
