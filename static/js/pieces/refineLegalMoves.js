@@ -17,18 +17,18 @@ function refineLegalMoves(board, moveLists, rank, file, side, type, king) {
         var threats = board[rank][file].threats(board, -side).list;
         for (var x in threats) {
             var threateningPiece = board[threats[x].rank][threats[x].file].piece;
-            if (piece.type === 'q' || piece.type === 'b' || piece.type === 'r') {
+            if (threateningPiece.type === 'q' || threateningPiece.type === 'b' || threateningPiece.type === 'r') {
                 var inr, inf;
-                if (piece.rank > rank)
+                if (threateningPiece.rank > rank)
                     inr = -1;
-                else if (piece.rank === rank)
+                else if (threateningPiece.rank === rank)
                     inr = 0;
                 else
                     inr = 1;
 
-                if (piece.file > file)
+                if (threateningPiece.file > file)
                     inf = -1;
-                else if (piece.file === file)
+                else if (threateningPiece.file === file)
                     inf = 0;
                 else
                     inf = 1;

@@ -41,17 +41,6 @@ stockfishInstance.stdout.on('data', function (data) {
     }
 });
 
-/*
-child.stdin.write('position rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\n');
-child.stdin.write('go 1000\n');
-child.stdout.on('data', function (data) {
-    console.log(data + "  - " + data[0]);
-    if (data[5] === 'n')
-        child.stdin.write('quit\n');
-
-});
-*/
-
 app.openGames = [];
 app.runningGames = {};
 app.clients = {};
