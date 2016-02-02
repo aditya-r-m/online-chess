@@ -9,10 +9,9 @@ var io = require('socket.io').listen(server);
 
 var port = process.env.PORT || 3000;
 
-var stockfishInstance = undefined;
-/*require("child_process").spawn('./stockfish/bin/stockfish-linux.exe', [], {
+var stockfishInstance = require("child_process").spawn('./stockfish/bin/stockfish-linux', [], {
     stdio: [null, null, null, 'ipc']
-});*/
+});
 stockfishInstance.command = function (commandString) {
     this.stdin.write(commandString + '\n');
 };
