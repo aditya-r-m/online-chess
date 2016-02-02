@@ -7,10 +7,10 @@ var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
-var port = process.env.PORT || 3000;
+var port = process.env.OPENSHIFT_NODEJS_PORT || 3000;
 
 var stockfishInstance;
-stockfishInstance = require("child_process").spawn('bash stockfish/bin/stockfish-linux', [], {
+stockfishInstance = require("child_process").spawn('./stockfish/bin/stockfish-linux', [], {
     stdio: [null, null, null, 'ipc']
 });
 stockfishInstance.command = function (commandString) {
@@ -43,10 +43,6 @@ stockfishInstance.stdout.on('data', function (data) {
         }
     }
 });
-
-try {} catch (e) {
-    console.log(e);
-}
 
 app.openGames = [];
 app.runningGames = {};
