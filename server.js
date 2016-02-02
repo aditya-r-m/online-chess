@@ -7,6 +7,8 @@ var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
+var port = process.env.PORT || 3000;
+
 var stockfishInstance = require("child_process").spawn('./stockfish/bin/stockfish.exe', [], {
     stdio: [null, null, null, 'ipc']
 });
@@ -199,6 +201,6 @@ io.on("connection", function (socket) {
 });
 
 // start server
-server.listen(3000, function () {
+server.listen(port, function () {
     console.log("listening");
 });
