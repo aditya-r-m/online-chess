@@ -20,29 +20,29 @@ angular.module("chess")
     $scope.livePieces = new Array(32);
     $scope.capturedPieces = [];
 
-    $scope.livePieces[4] = $scope.board[0][0].piece = new rook(0, 0, 1, 'r');
-    $scope.livePieces[28] = $scope.board[0][1].piece = new knight(0, 1, 1, 'n');
-    $scope.livePieces[2] = $scope.board[0][2].piece = new bishop(0, 2, 1, 'b');
-    $scope.livePieces[0] = $scope.board[0][3].piece = new king(0, 3, 1, 'k');
-    $scope.livePieces[3] = $scope.board[0][4].piece = new queen(0, 4, 1, 'q');
-    $scope.livePieces[5] = $scope.board[0][5].piece = new bishop(0, 5, 1, 'b');
-    $scope.livePieces[6] = $scope.board[0][6].piece = new knight(0, 6, 1, 'n');
-    $scope.livePieces[7] = $scope.board[0][7].piece = new rook(0, 7, 1, 'r');
+    $scope.livePieces[4] = $scope.board[0][0].piece = rook.create(0, 0, 1, 'r');
+    $scope.livePieces[28] = $scope.board[0][1].piece = knight.create(0, 1, 1, 'n');
+    $scope.livePieces[2] = $scope.board[0][2].piece = bishop.create(0, 2, 1, 'b');
+    $scope.livePieces[0] = $scope.board[0][3].piece = king.create(0, 3, 1, 'k');
+    $scope.livePieces[3] = $scope.board[0][4].piece = queen.create(0, 4, 1, 'q');
+    $scope.livePieces[5] = $scope.board[0][5].piece = bishop.create(0, 5, 1, 'b');
+    $scope.livePieces[6] = $scope.board[0][6].piece = knight.create(0, 6, 1, 'n');
+    $scope.livePieces[7] = $scope.board[0][7].piece = rook.create(0, 7, 1, 'r');
 
     for (var i = 0; i < 8; i++)
-        $scope.livePieces[8 + i] = $scope.board[1][i].piece = new pawn(1, i, 1, 'p');
+        $scope.livePieces[8 + i] = $scope.board[1][i].piece = pawn.create(1, i, 1, 'p');
 
     for (var i = 0; i < 8; i++)
-        $scope.livePieces[16 + i] = $scope.board[6][i].piece = new pawn(6, i, -1, 'p');
+        $scope.livePieces[16 + i] = $scope.board[6][i].piece = pawn.create(6, i, -1, 'p');
 
-    $scope.livePieces[24] = $scope.board[7][0].piece = new rook(7, 0, -1, 'r');
-    $scope.livePieces[25] = $scope.board[7][1].piece = new knight(7, 1, -1, 'n');
-    $scope.livePieces[26] = $scope.board[7][2].piece = new bishop(7, 2, -1, 'b');
-    $scope.livePieces[1] = $scope.board[7][3].piece = new king(7, 3, -1, 'k');
-    $scope.livePieces[27] = $scope.board[7][4].piece = new queen(7, 4, -1, 'q');
-    $scope.livePieces[29] = $scope.board[7][5].piece = new bishop(7, 5, -1, 'b');
-    $scope.livePieces[30] = $scope.board[7][6].piece = new knight(7, 6, -1, 'n');
-    $scope.livePieces[31] = $scope.board[7][7].piece = new rook(7, 7, -1, 'r');
+    $scope.livePieces[24] = $scope.board[7][0].piece = rook.create(7, 0, -1, 'r');
+    $scope.livePieces[25] = $scope.board[7][1].piece = knight.create(7, 1, -1, 'n');
+    $scope.livePieces[26] = $scope.board[7][2].piece = bishop.create(7, 2, -1, 'b');
+    $scope.livePieces[1] = $scope.board[7][3].piece = king.create(7, 3, -1, 'k');
+    $scope.livePieces[27] = $scope.board[7][4].piece = queen.create(7, 4, -1, 'q');
+    $scope.livePieces[29] = $scope.board[7][5].piece = bishop.create(7, 5, -1, 'b');
+    $scope.livePieces[30] = $scope.board[7][6].piece = knight.create(7, 6, -1, 'n');
+    $scope.livePieces[31] = $scope.board[7][7].piece = rook.create(7, 7, -1, 'r');
 
     if (gameData.againstStockfish && gameData.side === -1) {
         var positionString = boardToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
@@ -148,13 +148,13 @@ angular.module("chess")
         var pieceSide = rank === 0 ? -1 : 1;
         var promoted;
         if (type === 'q')
-            promoted = new queen(rank, file, pieceSide, type);
+            promoted = queen.create(rank, file, pieceSide, type);
         else if (type === 'r')
-            promoted = new rook(rank, file, pieceSide, type);
+            promoted = rook.create(rank, file, pieceSide, type);
         else if (type === 'b')
-            promoted = new bishop(rank, file, pieceSide, type);
+            promoted = bishop.create(rank, file, pieceSide, type);
         else if (type === 'n')
-            promoted = new knight(rank, file, pieceSide, type);
+            promoted = knight.create(rank, file, pieceSide, type);
 
         $scope.livePieces[$scope.livePieces.indexOf($scope.board[rank][file])] = promoted;
         $scope.board[rank][file].piece = promoted;
