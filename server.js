@@ -9,44 +9,44 @@ var io = require('socket.io').listen(server);
 
 var port = process.env.PORT || 3000;
 
-var stockfishInstance
+var stockfishInstance;
 try {
     stockfishInstance = require("child_process").spawn('./stockfish/bin/stockfish-linux', [], {
         stdio: [null, null, null, 'ipc']
     });
+    stockfishInstance.command = function (commandString) {
+        this.stdin.write(commandString + '\n');
+    };
+
+    stockfishInstance.stdout.setEncoding('utf8');
+    var currentStockfishClient = undefined,
+        waitingStockfishClients = [];
+
+    stockfishInstance.stdout.on('data', function (data) {
+        var offset, bestmove;
+        console.log(data);
+        if ((offset = data.indexOf("bestmove")) > -1) {
+            bestmove = data.substring(offset + 9, offset + 13);
+            console.log(bestmove);
+            currentStockfishClient.emit("move-made", {
+                "of": bestmove.charCodeAt(0) - "a".charCodeAt(0),
+                "or": parseInt(bestmove.charAt(1)) - 1,
+                "nf": bestmove.charCodeAt(2) - "a".charCodeAt(0),
+                "nr": parseInt(bestmove.charAt(3)) - 1
+            });
+
+            if (waitingStockfishClients.length === 0)
+                currentStockfishClient = undefined;
+            else {
+                currentStockfishClient = waitingStockfishClients.shift();
+                stockfishInstance.command(currentStockfishClient.positionString);
+                stockfishInstance.command(currentStockfishClient.searchString);
+            }
+        }
+    });
 } catch (e) {
     console.log(e);
 }
-stockfishInstance.command = function (commandString) {
-    this.stdin.write(commandString + '\n');
-};
-
-stockfishInstance.stdout.setEncoding('utf8');
-var currentStockfishClient = undefined,
-    waitingStockfishClients = [];
-
-stockfishInstance.stdout.on('data', function (data) {
-    var offset, bestmove;
-    console.log(data);
-    if ((offset = data.indexOf("bestmove")) > -1) {
-        bestmove = data.substring(offset + 9, offset + 13);
-        console.log(bestmove);
-        currentStockfishClient.emit("move-made", {
-            "of": bestmove.charCodeAt(0) - "a".charCodeAt(0),
-            "or": parseInt(bestmove.charAt(1)) - 1,
-            "nf": bestmove.charCodeAt(2) - "a".charCodeAt(0),
-            "nr": parseInt(bestmove.charAt(3)) - 1
-        });
-
-        if (waitingStockfishClients.length === 0)
-            currentStockfishClient = undefined;
-        else {
-            currentStockfishClient = waitingStockfishClients.shift();
-            stockfishInstance.command(currentStockfishClient.positionString);
-            stockfishInstance.command(currentStockfishClient.searchString);
-        }
-    }
-});
 
 app.openGames = [];
 app.runningGames = {};
