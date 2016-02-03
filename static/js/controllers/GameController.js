@@ -1,6 +1,6 @@
 angular.module("chess")
 
-.controller("GameController", ['$scope', 'gameData', 'socketService', '$uibModal', 'translatorService', 'threatMapService', function ($scope, gameData, socketService, $uibModal, translatorService, threatMapService) {
+.controller("GameController", ['$scope', 'gameData', 'socketService', '$uibModal', 'translatorService', 'threatMapService', 'bishop', 'queen', 'knight', 'pawn', 'king', 'rook', function ($scope, gameData, socketService, $uibModal, translatorService, threatMapService, bishop, queen, knight, pawn, king, rook) {
     $scope.board = [];
     for (var i = 0; i < 8; i++) {
         $scope.board.push([]);

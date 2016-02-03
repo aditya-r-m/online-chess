@@ -5,17 +5,10 @@ var express = require("express");
 var path = require("path");
 var app = express();
 
-app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3002);
-app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
-
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
-var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3002;
-
-var stockfishInstance;
-
-stockfishInstance = require("child_process").spawn('./stockfish/bin/stockfish-windows.exe', [], {
+var stockfishInstance = require("child_process").spawn('./stockfish/bin/stockfish-windows.exe', [], {
     stdio: [null, null, null, 'ipc']
 });
 stockfishInstance.command = function (commandString) {
@@ -207,10 +200,7 @@ io.on("connection", function (socket) {
     });
 });
 
-var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
-var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
-
 // start server
-server.listen(server_port, server_ip_address, function () {
+server.listen(3000, function () {
     console.log("listening");
 });
