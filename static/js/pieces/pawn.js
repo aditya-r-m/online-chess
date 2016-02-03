@@ -33,7 +33,6 @@ angular.module("pieceDefinitions")
                         file: this.file + stepsK[x][1]
                     });
                 else if (enPassant) {
-                    console.log(this.rank + "  " + this.file + "  " + enPassant);
                     if (this.rank + stepsK[x][0] === enPassant.rank && this.file + stepsK[x][1] === enPassant.file)
                         enPassantCapture = {
                             "rank": enPassant.rank,

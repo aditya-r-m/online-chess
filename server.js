@@ -21,7 +21,6 @@ var currentStockfishClient = undefined,
 
 stockfishInstance.stdout.on('data', function (data) {
     var offset, bestmove;
-    console.log(data);
     if ((offset = data.indexOf("bestmove")) > -1) {
         bestmove = data.substring(offset + 9, offset + 13);
         console.log(bestmove);
@@ -185,8 +184,6 @@ io.on("connection", function (socket) {
         if (!this.againstStockfish)
             app.runningGames[data.source].emit("move-made", data);
         else {
-            console.log(data.positionString);
-            console.log(data.searchString);
             if (!currentStockfishClient) {
                 currentStockfishClient = this;
                 stockfishInstance.command(data.positionString);
