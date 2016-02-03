@@ -13,7 +13,7 @@ angular.module("chess")
     .state("game", {
         url: "/game",
         templateUrl: "/static/templates/game.html"
-    })
+    });
 }])
 
 
@@ -29,4 +29,4 @@ angular.module("chess")
     this.turn = false;
     this.picked = false;
     this.enPassant = undefined;
-})
+});
