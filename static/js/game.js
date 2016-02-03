@@ -1,1 +1,1 @@
-angular.module("chess", ["ui.router", "ui.bootstrap", "pieceDefinitions"]);
+angular.module("chess", ["ui.router", "ui.bootstrap", "pieceDefinitions", "utils"]);

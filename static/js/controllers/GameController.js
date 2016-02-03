@@ -1,6 +1,6 @@
 angular.module("chess")
 
-.controller("GameController", ['$scope', 'gameData', 'socketService', '$uibModal', function ($scope, gameData, socketService, $uibModal) {
+.controller("GameController", ['$scope', 'gameData', 'socketService', '$uibModal', 'translatorService', 'threatMapService', function ($scope, gameData, socketService, $uibModal, translatorService, threatMapService) {
     $scope.board = [];
     for (var i = 0; i < 8; i++) {
         $scope.board.push([]);
@@ -8,7 +8,7 @@ angular.module("chess")
             $scope.board[i].push({
                 'rank': i,
                 'file': j,
-                'threats': threats
+                'threats': threatMapService.threats
             });
     }
 
@@ -45,7 +45,7 @@ angular.module("chess")
     $scope.livePieces[31] = $scope.board[7][7].piece = rook.create(7, 7, -1, 'r');
 
     if (gameData.againstStockfish && gameData.side === -1) {
-        var positionString = boardToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
+        var positionString = translatorService.convertToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
 
         socketService.socket.emit("move-made", {
             "source": socketService.socket.id,
@@ -130,7 +130,7 @@ angular.module("chess")
         if (data.promoteTo)
             $scope.promotePawn(data.nr, data.nf, data.promoteTo);
 
-        if (!hasMoves($scope.data.side, $scope.livePieces, $scope.board, $scope.data.enPassant)) {
+        if (!threatMapService.hasMoves($scope.data.side, $scope.livePieces, $scope.board, $scope.data.enPassant)) {
             var king = $scope.livePieces[$scope.data.side === 1 ? 0 : 1];
             if ($scope.board[king.rank][king.file].threats($scope.board, -$scope.data.side).count > 0)
                 $scope.data.winner = -$scope.data.side;
@@ -186,7 +186,7 @@ angular.module("chess")
                     "r": r,
                     "f": f
                 };
-                $scope.data.lists = refineLegalMoves($scope.board, $scope.board[r][f].piece.legalMoves($scope.board, $scope.data.enPassant), r, f, $scope.board[r][f].piece.side, $scope.board[r][f].piece.type, $scope.livePieces[$scope.board[r][f].piece.side === 1 ? 0 : 1]);
+                $scope.data.lists = threatMapService.refineLegalMoves($scope.board, $scope.board[r][f].piece.legalMoves($scope.board, $scope.data.enPassant), r, f, $scope.board[r][f].piece.side, $scope.board[r][f].piece.type, $scope.livePieces[$scope.board[r][f].piece.side === 1 ? 0 : 1]);
 
                 for (var x in $scope.data.lists.move)
                     $scope.board[$scope.data.lists.move[x].rank][$scope.data.lists.move[x].file].highlightedMove = true;
@@ -299,7 +299,7 @@ angular.module("chess")
                         var promotionType = $scope.selection.value;
                         $scope.promotePawn(nr, nf, promotionType);
                         if (gameData.againstStockfish)
-                            var positionString = boardToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
+                            var positionString = translatorService.convertToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
                         socketService.socket.emit("move-made", {
                             "or": or,
                             "of": of,
@@ -314,7 +314,7 @@ angular.module("chess")
                     });
                 } else {
                     if (gameData.againstStockfish)
-                        var positionString = boardToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
+                        var positionString = translatorService.convertToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
 
                     socketService.socket.emit("move-made", {
                         "or": or,
@@ -342,7 +342,7 @@ angular.module("chess")
             }
             $scope.data.picked = false;
 
-            if (!hasMoves(-$scope.data.side, $scope.livePieces, $scope.board, $scope.data.enPassant)) {
+            if (!threatMapService.hasMoves(-$scope.data.side, $scope.livePieces, $scope.board, $scope.data.enPassant)) {
                 var king = $scope.livePieces[$scope.data.side === -1 ? 0 : 1];
                 if ($scope.board[king.rank][king.file].threats($scope.board, $scope.data.side).count > 0)
                     $scope.data.winner = $scope.data.side;
