@@ -7,6 +7,7 @@ var app = express();
 
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
+var port = process.env.PORT || 3000
 
 var instantiateStockfish = false;
 
@@ -202,6 +203,6 @@ io.on("connection", function (socket) {
 });
 
 // start server
-server.listen(3000, function () {
+server.listen(port, function () {
     console.log("listening");
 });
