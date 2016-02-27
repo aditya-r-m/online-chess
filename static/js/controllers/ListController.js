@@ -8,6 +8,8 @@ angular.module("chess")
 
     $scope.failed = false;
 
+    $scope.stockfishAvailable = false;
+
     socketService.socket.on("connect", function () {
         $scope.id = socketService.socket.id;
         $scope.$apply();

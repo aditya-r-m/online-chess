@@ -229,8 +229,8 @@ angular.module("chess")
                     nf = (f < 3) ? 2 : 4;
                     $scope.board[nr][nf].piece = $scope.board[or][of].piece;
                     $scope.board[or][of].piece = undefined;
-                    $scope.board[nr][nf].piece.rank = or;
-                    $scope.board[nr][nf].piece.file = of;
+                    $scope.board[nr][nf].piece.rank = nr;
+                    $scope.board[nr][nf].piece.file = nf;
                 }
 
                 $scope.board[r][f].piece = $scope.board[$scope.data.picked.r][$scope.data.picked.f].piece;

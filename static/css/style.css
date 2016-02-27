@@ -58,8 +58,8 @@ body {
     border: 1px solid black;
 }
 .chessboard {
-    width: 720px;
-    height: 722px;
+    width: 80vh;
+    height: 80vh;
     padding: 0px;
     border: 1px solid black;
 }

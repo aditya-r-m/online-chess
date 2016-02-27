@@ -18,14 +18,14 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
+            <tr ng-if="stockfishAvailable">
                 <td>Bot</td>
                 <td>White</td>
                 <td>
                     <button class="btn btn-success" ng-click="joinGame(0,'stockfish','white')">Join</button>
                 </td>
             </tr>
-            <tr>
+            <tr ng-if="stockfishAvailable">
                 <td>Bot</td>
                 <td>Black</td>
                 <td>
@@ -48,4 +48,7 @@
             </tr>
         </tbody>
     </table>
+    <div class="row text-center" ng-if="list.length === 0">
+        <p>No open Games!</p>
+    </div>
 </div>
