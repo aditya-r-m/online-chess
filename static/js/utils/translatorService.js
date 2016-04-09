@@ -1,6 +1,7 @@
 angular.module("utils")
 
 .service('translatorService', function () {
+
     this.convertToFEN = function (board, side, kingW, kingB, enPassant, halfMoves, fullMoves) {
         var s = 'position fen ';
         var count = 0;

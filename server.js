@@ -9,7 +9,7 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var port = process.env.PORT || 3000
 
-var instantiateStockfish = false;
+var instantiateStockfish = true;
 
 if(instantiateStockfish) {
     var stockfishInstance = require("child_process").spawn('./stockfish/bin/stockfish-windows.exe', [], {
