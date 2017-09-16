@@ -1,9 +1,5 @@
 body {
-    background: white;
-    background: -webkit-linear-gradient(white, #999999);
-    background: -o-linear-gradient(white, #999999);
-    background: -moz-linear-gradient(white, #999999);
-    background: linear-gradient(white, #999999);
+    background: black;
 }
 .list-box {
     margin: auto;
