@@ -1,5 +1,6 @@
 body {
     background: black;
+    margin-top: 40px;
 }
 .list-box {
     margin: auto;
@@ -25,24 +26,20 @@ body {
     margin: auto;
     width: auto;
 }
-.player-details {
+.player-details, .player-details > * {
     float: left;
 }
-.player-details > * {
-    float: left;
-}
-.opponent-details {
+.opponent-details, .opponent-details > * {
     float: right;
 }
-.opponent-details > * {
-    float: right;
+.player-details > h4, .opponent-details > h4 {
+    margin: 5px;
 }
 .panel img {
     height: 25px;
     width: 25px;
 }
 #usr {
-    display: inline-block;
     width: 11em;
     float: right;
 }
@@ -70,13 +67,13 @@ body {
     width: 12.5%;
 }
 .even {
-    background-color: white;
+    background-color: #eeeed2;
 }
 .odd {
-    background-color: black;
+    background-color: #769656;
 }
 .highlighted-move {
-    background-color: yellow;
+    background-color: rgb(255, 255, 51);
 }
 .highlighted-capture {
     background-color: red;
@@ -92,4 +89,32 @@ div > img {
 .centered {
     align-content: center;
     text-align: center;
+}
+.chat-box {
+    position: fixed;
+    top: 20px;
+    right: 10px;
+}
+.chat-box ul {
+    max-height: 300px;
+    max-width: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.chat-box ul > li {
+    margin: 10px;
+    margin-left: 25px;
+    background-color: #eeeed2;
+    color: black;
+}
+.chat-box ul > .theirs {
+    margin-left: 10px;
+    margin-right: 25px;
+}
+.chat-box ul > .dark {
+    background-color: #769656;
+    color: white;
+}
+.chat-box form {
+    margin: 0px;
 }

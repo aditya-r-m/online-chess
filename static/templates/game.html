@@ -20,8 +20,32 @@
 				<h4>{{data.opponent}}</h4>
 			</div>
 
-			<div ng-if="data.turn">{{data.side==1?"white":"black"}} to move</div>
-			<div ng-if="!data.turn">{{data.side==1?"black":"white"}} to move</div>
+			<big ng-if="data.player !== data.opponent">{{data.turn ? data.player : data.opponent}} to move</big>
+			<big ng-if="data.player === data.opponent">{{data.turn ? 'Your' : 'Opponent\'s'}} move</big>
+		</div>
+	</div>
+
+	<div class="panel panel-default panel-message chat-box" ng-if="!gameData.againstStockfish" ng-controller="ChatController">
+		<button class="btn btn-default" ng-click="showChat = true" ng-show="!showChat"><big><strong>+</strong></big></button>
+		<div class="panel-body" data-ng-show="showChat">
+			<ul class="list-group chat-list" ng-if="messages.length">
+				<li class="list-group-item" ng-repeat="message in messages"
+					ng-class="{
+						'dark': message.side !== 1,
+						'theirs': message.side !== data.side
+					}">{{message.text}}</li>
+			</ul> 
+			<div class="form-group"> 
+				<form ng-submit="send()">
+					<div class="input-group">
+						<input type="text" class="form-control" name="message" ng-model="message">
+						<div class="input-group-btn">
+							<button class="btn btn-primary" type="submit">Send</button>
+							<button class="btn btn-default" ng-click="showChat = false">-</button>
+						</div>
+					</div>
+				</form>
+			</div>
 		</div>
 	</div>
 </div>

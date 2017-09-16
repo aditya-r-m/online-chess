@@ -47,7 +47,7 @@ angular.module("chess")
     if (gameData.againstStockfish && gameData.side === -1) {
         var positionString = translatorService.convertToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
 
-        socketService.socket.emit("move-made", {
+        socketService.emit("move-made", {
             "source": socketService.socket.id,
             "againstStockfish": gameData.againstStockfish,
             "positionString": positionString,
@@ -55,7 +55,7 @@ angular.module("chess")
         });
     }
 
-    socketService.socket.on("move-made", function (data) {
+    socketService.on("move-made", function (data) {
 
         if ($scope.data.side === 1)
             $scope.data.fullMoves++;
@@ -141,7 +141,6 @@ angular.module("chess")
         } else {
             $scope.data.turn = true;
         }
-        $scope.$apply();
     });
 
     $scope.promotePawn = function (rank, file, type) {
@@ -168,6 +167,9 @@ angular.module("chess")
             resolve: {
                 winner: function () {
                     return side;
+                },
+                winningPlayer: function () {
+                    return side === $scope.data.side ? $scope.data.player : $scope.data.opponent;
                 }
             }
         });
@@ -294,13 +296,12 @@ angular.module("chess")
                     });
 
                     modal.result.then(function () {
-                        console.log("succes callback - never used");
                     }, function () {
                         var promotionType = $scope.selection.value;
                         $scope.promotePawn(nr, nf, promotionType);
                         if (gameData.againstStockfish)
                             var positionString = translatorService.convertToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
-                        socketService.socket.emit("move-made", {
+                        socketService.emit("move-made", {
                             "or": or,
                             "of": of,
                             "nr": nr,
@@ -316,7 +317,7 @@ angular.module("chess")
                     if (gameData.againstStockfish)
                         var positionString = translatorService.convertToFEN($scope.board, $scope.data.side, $scope.livePieces[0], $scope.livePieces[1], $scope.data.enPassant, $scope.data.halfMoves, $scope.data.fullMoves);
 
-                    socketService.socket.emit("move-made", {
+                    socketService.emit("move-made", {
                         "or": or,
                         "of": of,
                         "nr": nr,

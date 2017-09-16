@@ -115,14 +115,11 @@ io.on("connection", function (socket) {
     // fired when a user joins an already created game
     socket.on("join-game", function (data) {
 
-        // add details to app.runningGames array, this will be useful when trasmitting move related data between the players
+        // add details to app.runningGames map, this will be useful when trasmitting move related data between the players
         // note that the key values DO NOT have '/#' prefix. This makes it suitable to directly feed client provided IDs
         if (!data.againstStockfish) {
-            app.runningGames[data.owner] = app.clients['/#' + data.opponent];
-            app.runningGames[data.opponent] = app.clients['/#' + data.owner];
-
-            data.owner = '/#' + data.owner;
-            data.opponent = '/#' + data.opponent;
+            app.runningGames[data.owner] = app.clients[data.opponent];
+            app.runningGames[data.opponent] = app.clients[data.owner];
 
             // remove the game which will be started now
             var i = app.clients[data.owner].gameIndex;
@@ -183,8 +180,8 @@ io.on("connection", function (socket) {
             this.againstStockfish = true;
         }
     });
-
-    // whenever move is made, simply forward the data to the opponent by looking up the app.runningGames array
+    
+    // whenever move is made, simply forward the data to the opponent by looking up the app.runningGames map
     socket.on("move-made", function (data) {
         if (!this.againstStockfish)
             app.runningGames[data.source].emit("move-made", data);
@@ -199,6 +196,11 @@ io.on("connection", function (socket) {
                 waitingStockfishClients[waitingStockfishClients.length - 1].commandString = data.commandString;
             }
         }
+    });
+
+    // whenever a message is sent, simply forward the data to the opponent by looking up the app.runningGames map
+    socket.on("message", function (data) {
+        app.runningGames[data.source].emit("message", data);
     });
 });
 

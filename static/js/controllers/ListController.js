@@ -10,29 +10,25 @@ angular.module("chess")
 
     $scope.stockfishAvailable = false;
 
-    socketService.socket.on("connect", function () {
+    socketService.on("connect", function () {
         $scope.id = socketService.socket.id;
-        $scope.$apply();
     });
 
-    socketService.socket.emit("get-list");
+    socketService.emit("get-list");
 
-    socketService.socket.on("add-games", function (data) {
+    socketService.on("add-games", function (data) {
         $scope.list = $scope.list.concat(data);
-        $scope.$apply();
     });
 
-    socketService.socket.on("update-list", function (data) {
+    socketService.on("update-list", function (data) {
         $scope.list[data.index] = data.game;
-        $scope.$apply();
     });
 
-    socketService.socket.on("remove-from-list", function (data) {
+    socketService.on("remove-from-list", function (data) {
         $scope.list.splice(data.index, 1);
-        $scope.$apply();
     });
 
-    socketService.socket.on("game-created", function (data) {
+    socketService.on("game-created", function (data) {
         gameData.started = true;
 
         if (data) {
@@ -51,7 +47,7 @@ angular.module("chess")
     $scope.createGame = function () {
         if ($scope.userName && $scope.userName != "") {
             $scope.failed = false;
-            socketService.socket.emit("new-game", {
+            socketService.emit("new-game", {
                 'player': $scope.userName,
                 'side': ((Math.random() > 0.5) ? 'black' : 'white'),
                 'id': socketService.socket.id
@@ -74,7 +70,7 @@ angular.module("chess")
 
         gameData.started = true;
 
-        socketService.socket.emit("join-game", {
+        socketService.emit("join-game", {
             'owner': id,
             'opponent': socketService.socket.id,
             'gameData': gameData,
