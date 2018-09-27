@@ -1,2 +1,3 @@
 # Demo
-[hosted at heroku](https://chess-node.herokuapp.com/#/list)
+App deployed at heroku (disabled stockfish integration) 
+[Link](https://chess-node.herokuapp.com/#/list)
